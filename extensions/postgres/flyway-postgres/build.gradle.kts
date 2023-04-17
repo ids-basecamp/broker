@@ -6,8 +6,8 @@ plugins {
 flyway {
     url = "jdbc:postgresql://localhost:5432/federated_catalog"
     driver= "org.postgresql.Driver"
-    user = "postgres"
-    password = "abc@123"
+    user = "yourLocalBdUser"
+    password = "yourLocalBdPassword"
 }
 
 dependencies {
