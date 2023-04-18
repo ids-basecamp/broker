@@ -3,12 +3,14 @@ rootProject.name = "federated-catalog"
 include(":core:federated-catalog")
 include(":extensions:store:fcc-node-directory-cosmos")
 include(":extensions:api:federated-catalog-api")
+include(":extensions:postgres")
 include(":spi:federated-catalog-spi")
 include(":launchers")
 include(":system-tests:component-tests")
 include(":system-tests:end2end-test:connector-runtime")
 include(":system-tests:end2end-test:catalog-runtime")
 include(":system-tests:end2end-test:e2e-junit-runner")
+
 
 
 // this is needed to have access to snapshot builds of plugins
