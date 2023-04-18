@@ -32,11 +32,11 @@ dependencyResolutionManagement {
     }
     versionCatalogs {
         create("libs") {
-            from("org.eclipse.edc:edc-versions:0.0.1-SNAPSHOT")
+            from("org.eclipse.edc:edc-versions:0.0.1-milestone-8")
         }
         // create version catalog for all EDC modules
         create("edc") {
-            version("edc", "0.0.1-SNAPSHOT")
+            version("edc", "0.0.1-milestone-8")
             library("spi-catalog", "org.eclipse.edc", "catalog-spi").versionRef("edc")
             library("spi-core", "org.eclipse.edc", "core-spi").versionRef("edc")
             library("spi-web", "org.eclipse.edc", "web-spi").versionRef("edc")
@@ -59,7 +59,7 @@ dependencyResolutionManagement {
             library("ext-azure-test", "org.eclipse.edc", "azure-test").versionRef("edc")
 
             // DPF modules
-            library("dpf-transferclient", "org.eclipse.edc", "data-plane-transfer-client").versionRef("edc")
+            library("dpf-transferclient", "org.eclipse.edc", "data-plane-client").versionRef("edc")
             library("dpf-selector-client", "org.eclipse.edc", "data-plane-selector-client").versionRef("edc")
             library("dpf-selector-spi", "org.eclipse.edc", "data-plane-selector-spi").versionRef("edc")
             library("dpf-selector-core", "org.eclipse.edc", "data-plane-selector-core").versionRef("edc")
