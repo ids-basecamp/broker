@@ -15,12 +15,13 @@
 plugins {
     `java-library`
     id("application")
-    id("com.github.johnrengelman.shadow") version "7.0.0"
+    id("com.github.johnrengelman.shadow") version "7.1.2"
 }
 
 dependencies {
     runtimeOnly(project(":core:federated-catalog"))
     runtimeOnly(project(":extensions:api:federated-catalog-api"))
+    runtimeOnly(project(":extensions:store:postgres-flyway"))
     runtimeOnly(edc.bundles.connector)
 }
 
