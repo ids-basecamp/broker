@@ -2,6 +2,7 @@ rootProject.name = "federated-catalog"
 
 include(":core:federated-catalog")
 include(":extensions:store:fcc-node-directory-cosmos")
+include(":extensions:store:postgres-flyway")
 include(":extensions:api:federated-catalog-api")
 include(":spi:federated-catalog-spi")
 include(":launchers")
@@ -55,6 +56,9 @@ dependencyResolutionManagement {
             library("spi-ids", "org.eclipse.edc", "ids-spi").versionRef("edc")
             library("ids", "org.eclipse.edc", "ids").versionRef("edc")
             library("iam-mock", "org.eclipse.edc", "iam-mock").versionRef("edc")
+            library("sql-core", "org.eclipse.edc", "sql-core").versionRef("edc")
+            library("sql-pool", "org.eclipse.edc", "sql-pool-apache-commons").versionRef("edc")
+            library("transaction-local", "org.eclipse.edc", "transaction-local").versionRef("edc")
             library("ext-azure-cosmos-core", "org.eclipse.edc", "azure-cosmos-core").versionRef("edc")
             library("ext-azure-test", "org.eclipse.edc", "azure-test").versionRef("edc")
 
