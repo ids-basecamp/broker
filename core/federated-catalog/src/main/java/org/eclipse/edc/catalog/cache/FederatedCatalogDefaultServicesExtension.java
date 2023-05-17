@@ -22,7 +22,7 @@ import org.eclipse.edc.catalog.spi.CacheQueryAdapterRegistry;
 import org.eclipse.edc.catalog.spi.FederatedCacheNodeDirectory;
 import org.eclipse.edc.catalog.spi.FederatedCacheStore;
 import org.eclipse.edc.catalog.spi.QueryEngine;
-import org.eclipse.edc.catalog.store.InMemoryFederatedCacheStore;
+import org.eclipse.edc.catalog.store.memory.InMemoryFederatedCacheStore;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.runtime.metamodel.annotation.Provider;
 import org.eclipse.edc.spi.system.ServiceExtension;

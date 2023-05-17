@@ -12,7 +12,7 @@
  *
  */
 
-package org.eclipse.edc.catalog.store;
+package org.eclipse.edc.catalog.store.memory;
 
 import org.eclipse.edc.catalog.spi.FederatedCacheStore;
 import org.eclipse.edc.connector.contract.spi.types.offer.ContractOffer;

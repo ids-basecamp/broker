@@ -15,7 +15,7 @@
 package org.eclipse.edc.catalog.defaults.store;
 
 
-import org.eclipse.edc.catalog.store.InMemoryFederatedCacheStore;
+import org.eclipse.edc.catalog.store.memory.InMemoryFederatedCacheStore;
 import org.eclipse.edc.connector.contract.spi.types.offer.ContractOffer;
 import org.eclipse.edc.policy.model.Policy;
 import org.eclipse.edc.spi.query.CriterionConverter;
