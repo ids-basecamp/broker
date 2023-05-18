@@ -2,6 +2,7 @@ rootProject.name = "federated-catalog"
 
 include(":core:federated-catalog")
 include(":extensions:store:fcc-node-directory-cosmos")
+include(":extensions:store:fcc-store-sql")
 include(":extensions:store:postgres-flyway")
 include(":extensions:api:federated-catalog-api")
 include(":spi:federated-catalog-spi")

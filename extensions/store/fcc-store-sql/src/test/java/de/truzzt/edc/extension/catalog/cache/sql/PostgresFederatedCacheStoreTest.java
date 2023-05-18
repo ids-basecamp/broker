@@ -12,13 +12,13 @@
  *
  */
 
-package org.eclipse.edc.catalog.store.sql;
+package de.truzzt.edc.extension.catalog.cache.sql;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import de.truzzt.edc.extension.catalog.cache.test.TestUtil;
 import de.truzzt.edc.extension.postgresql.migration.DatabaseMigrationManager;
-import org.eclipse.edc.catalog.store.sql.schema.BaseSqlDialectStatements;
-import org.eclipse.edc.catalog.store.sql.schema.postgres.PostgresDialectStatements;
-import org.eclipse.edc.catalog.test.TestUtil;
+import de.truzzt.edc.extension.catalog.cache.sql.schema.BaseSqlDialectStatements;
+import de.truzzt.edc.extension.catalog.cache.sql.schema.postgres.PostgresDialectStatements;
 import org.eclipse.edc.connector.contract.spi.types.offer.ContractOffer;
 import org.eclipse.edc.connector.defaults.storage.assetindex.InMemoryAssetIndex;
 import org.eclipse.edc.junit.annotations.PostgresqlDbIntegrationTest;
@@ -74,6 +74,7 @@ class PostgresFederatedCacheStoreTest {
 
     @Test
     @DisplayName("Save successful")
+    // TODO Implement save error cases
     void save_successful() {
         ContractOffer contractOffer = createContractOffer(99);
 
@@ -82,7 +83,7 @@ class PostgresFederatedCacheStoreTest {
 
     @Test
     @DisplayName("Expire all successful")
-    void expire_all_successful() {
+    void expireAll_successful() {
         List<ContractOffer> allContractOffers = createAndSaveContractOffers(10);
 
         federatedCacheStore.expireAll();
@@ -95,30 +96,23 @@ class PostgresFederatedCacheStoreTest {
 
         assertThat(contractOffersNotExpired)
                 .isNullOrEmpty();
-
     }
 
     @Test
     @DisplayName("Delete all expired all successful")
-    void delete_all_expired_successful(){
-
-        List<ContractOffer> allContractOffers = createAndSaveContractOffers(10);
+    void deleteAllExpired_successful() {
+        createAndSaveContractOffers(10);
 
         federatedCacheStore.expireAll();
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-        federatedCacheStore.deleteExpired();
-        List<Criterion> query = List.of();
 
+        TestUtil.sleep(1000);
+        federatedCacheStore.deleteExpired();
+
+        List<Criterion> query = List.of();
         var contractOffersExpired = federatedCacheStore.query(query);
 
         assertThat(contractOffersExpired)
                 .isNullOrEmpty();
-
-
     }
 
     @Test
@@ -177,5 +171,4 @@ class PostgresFederatedCacheStoreTest {
             return contractOffer;
         }).collect(Collectors.toList());
     }
-
 }

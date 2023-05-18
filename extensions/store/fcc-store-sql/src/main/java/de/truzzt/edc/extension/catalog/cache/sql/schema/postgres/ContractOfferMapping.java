@@ -12,9 +12,9 @@
  *
  */
 
-package org.eclipse.edc.catalog.store.sql.schema.postgres;
+package de.truzzt.edc.extension.catalog.cache.sql.schema.postgres;
 
-import org.eclipse.edc.catalog.store.sql.schema.ContractOfferStatements;
+import de.truzzt.edc.extension.catalog.cache.sql.schema.ContractOfferStatements;
 import org.eclipse.edc.connector.contract.spi.types.offer.ContractOffer;
 import org.eclipse.edc.sql.translation.TranslationMapping;
 

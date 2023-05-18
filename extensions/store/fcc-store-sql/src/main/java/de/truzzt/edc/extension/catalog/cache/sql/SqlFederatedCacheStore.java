@@ -12,11 +12,11 @@
  *
  */
 
-package org.eclipse.edc.catalog.store.sql;
+package de.truzzt.edc.extension.catalog.cache.sql;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import de.truzzt.edc.extension.catalog.cache.sql.schema.ContractOfferStatements;
 import org.eclipse.edc.catalog.spi.FederatedCacheStore;
-import org.eclipse.edc.catalog.store.sql.schema.ContractOfferStatements;
 import org.eclipse.edc.connector.contract.spi.types.offer.ContractOffer;
 import org.eclipse.edc.policy.model.Policy;
 import org.eclipse.edc.spi.asset.AssetIndex;
@@ -122,8 +122,8 @@ public class SqlFederatedCacheStore extends AbstractSqlStore implements Federate
     public void deleteExpired() {
         transactionContext.execute(() -> {
             try (var connection = getConnection()) {
-                Long dateInMilis = mapFromZonedDateTime(ZonedDateTime.now());
-                executeQuery(connection, statements.getDeleteExpiredTemplate(), dateInMilis);
+                Long dateInSeconds = mapFromZonedDateTime(ZonedDateTime.now());
+                executeQuery(connection, statements.getDeleteExpiredTemplate(), dateInSeconds);
 
             } catch (Exception e) {
                 throw new EdcPersistenceException(e.getMessage(), e);
@@ -135,8 +135,8 @@ public class SqlFederatedCacheStore extends AbstractSqlStore implements Federate
     public void expireAll() {
         transactionContext.execute(() -> {
             try (var connection = getConnection()) {
-                Long dateInMilis = mapFromZonedDateTime(ZonedDateTime.now());
-                executeQuery(connection, statements.getUpdateOfferEndTemplate(), dateInMilis);
+                Long dateInSeconds = mapFromZonedDateTime(ZonedDateTime.now());
+                executeQuery(connection, statements.getUpdateOfferEndTemplate(), dateInSeconds);
 
             } catch (Exception e) {
                 throw new EdcPersistenceException(e.getMessage(), e);

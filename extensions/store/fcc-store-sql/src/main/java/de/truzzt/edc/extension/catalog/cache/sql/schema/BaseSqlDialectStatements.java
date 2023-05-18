@@ -12,58 +12,21 @@
  *
  */
 
-package org.eclipse.edc.catalog.store.sql.schema;
+package de.truzzt.edc.extension.catalog.cache.sql.schema;
 
-import org.eclipse.edc.catalog.store.sql.schema.postgres.ContractOfferMapping;
+import de.truzzt.edc.extension.catalog.cache.sql.schema.postgres.ContractOfferMapping;
 import org.eclipse.edc.spi.query.QuerySpec;
 import org.eclipse.edc.sql.translation.SqlQueryStatement;
-
-import java.time.ZonedDateTime;
 
 import static java.lang.String.format;
 
 public class BaseSqlDialectStatements implements ContractOfferStatements {
-    @Override
-    public String getDeleteByIdTemplate() {
-        return format("DELETE FROM %s WHERE %s = ?",
-                getContractOfferTable(),
-                getIdColumn());
-    }
-
-    @Override
-    public String getFindByTemplate() {
-        return format("SELECT * FROM %s WHERE %s = ?", getContractOfferTable(), getIdColumn());
-    }
 
     @Override
     public String getInsertTemplate() {
-        return format("INSERT INTO %s (%s, %s, %s, %s, %s, %s, %s, %s, %s) VALUES (?, ?::json, ?, ?, ?, ?, ?, ?, ?)",
+        return format("INSERT INTO %s (%s, %s, %s, %s, %s, %s, %s, %s, %s) VALUES (?, ?%s, ?, ?, ?, ?, ?, ?, ?)",
                 getContractOfferTable(),
                 getIdColumn(),
-                getPolicyColumn(),
-                getAssetIdColumn(),
-                getUriProviderColumn(),
-                getUriConsumerColumn(),
-                getOfferStartColumn(),
-                getOfferEndColumn(),
-                getContractStartColumn(),
-                getContractEndColumn()
-        );
-    }
-
-    @Override
-
-    public String getCountTemplate() {
-        return format("SELECT COUNT (%s) FROM %s WHERE %s = ?",
-                getIdColumn(),
-                getContractOfferTable(),
-                getIdColumn());
-    }
-
-    @Override
-    public String getUpdateTemplate() {
-        return format("UPDATE %s SET %s = ?::json, %s = ?, %s = ?, %s = ?, %s = ?, %s = ?, %s = ?, %s = ? WHERE %s = ?",
-                getContractOfferTable(),
                 getPolicyColumn(),
                 getAssetIdColumn(),
                 getUriProviderColumn(),
@@ -72,17 +35,26 @@ public class BaseSqlDialectStatements implements ContractOfferStatements {
                 getOfferEndColumn(),
                 getContractStartColumn(),
                 getContractEndColumn(),
+                getFormatAsJsonOperator()
+        );
+    }
+
+    @Override
+    public String getCountTemplate() {
+        return format("SELECT COUNT (%s) FROM %s WHERE %s = ?",
+                getIdColumn(),
+                getContractOfferTable(),
                 getIdColumn());
     }
 
-    public String getUpdateOfferEndTemplate(){
+    public String getUpdateOfferEndTemplate() {
         return format("UPDATE %s SET %s = ? WHERE %s IS NULL",
                 getContractOfferTable(),
                 getOfferEndColumn(),
                 getOfferEndColumn());
     }
 
-    public String getDeleteExpiredTemplate(){
+    public String getDeleteExpiredTemplate() {
         return format("DELETE FROM %s WHERE %s < ?",
                 getContractOfferTable(),
                 getOfferEndColumn());
@@ -90,8 +62,7 @@ public class BaseSqlDialectStatements implements ContractOfferStatements {
 
     @Override
     public SqlQueryStatement createQuery(QuerySpec querySpec) {
-        var select = format("SELECT * FROM %s", getContractOfferTable());
-        return new SqlQueryStatement(select, querySpec, new ContractOfferMapping(this));
+        return new SqlQueryStatement(getSelectStatement(), querySpec, new ContractOfferMapping(this));
     }
 
     protected String getSelectStatement() {

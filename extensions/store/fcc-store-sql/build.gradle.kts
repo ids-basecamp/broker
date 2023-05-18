@@ -18,23 +18,30 @@ plugins {
 }
 
 dependencies {
-    api(edc.spi.core)
-    api(edc.spi.web)
     api(project(":spi:federated-catalog-spi"))
 
     implementation(edc.util)
     implementation(edc.core.connector)
+    implementation(edc.sql.core)
+    implementation(edc.spi.core)
 
     implementation(libs.okhttp)
-
     implementation(libs.jakarta.rsApi)
     implementation(libs.failsafe.core)
 
     // required for integration test
     testImplementation(edc.junit)
     testImplementation(edc.ext.http)
+    testImplementation(edc.core.controlplane)
     testImplementation(edc.spi.ids)
     testImplementation(libs.awaitility)
+    testImplementation(libs.postgres)
+
+    testImplementation(project(":core:federated-catalog"))
+    testImplementation(project(":extensions:store:postgres-flyway"))
+
+    testImplementation(testFixtures(edc.sql.core))
+    testFixturesImplementation(project(":extensions:store:postgres-flyway"))
 }
 
 edcBuild {

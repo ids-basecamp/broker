@@ -12,7 +12,7 @@
  *
  */
 
-package org.eclipse.edc.catalog.store.sql.schema.postgres;
+package de.truzzt.edc.extension.catalog.cache.sql.schema.postgres;
 
 import org.eclipse.edc.spi.query.Criterion;
 import org.eclipse.edc.sql.translation.JsonFieldMapping;

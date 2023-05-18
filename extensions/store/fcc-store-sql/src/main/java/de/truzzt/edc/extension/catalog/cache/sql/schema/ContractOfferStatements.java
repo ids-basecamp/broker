@@ -12,7 +12,7 @@
  *
  */
 
-package org.eclipse.edc.catalog.store.sql.schema;
+package de.truzzt.edc.extension.catalog.cache.sql.schema;
 
 import org.eclipse.edc.spi.query.QuerySpec;
 import org.eclipse.edc.sql.dialect.BaseSqlDialect;
@@ -63,15 +63,9 @@ public interface ContractOfferStatements {
         return "contract_end";
     }
 
-    String getDeleteByIdTemplate();
-
-    String getFindByTemplate();
-
     String getInsertTemplate();
 
     String getCountTemplate();
-
-    String getUpdateTemplate();
 
     String getUpdateOfferEndTemplate();
 
