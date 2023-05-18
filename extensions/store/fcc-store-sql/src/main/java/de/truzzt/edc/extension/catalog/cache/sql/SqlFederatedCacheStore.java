@@ -23,7 +23,6 @@ import org.eclipse.edc.spi.asset.AssetIndex;
 import org.eclipse.edc.spi.persistence.EdcPersistenceException;
 import org.eclipse.edc.spi.query.Criterion;
 import org.eclipse.edc.spi.query.QuerySpec;
-import org.eclipse.edc.spi.types.domain.asset.Asset;
 import org.eclipse.edc.sql.store.AbstractSqlStore;
 import org.eclipse.edc.transaction.datasource.spi.DataSourceRegistry;
 import org.eclipse.edc.transaction.spi.TransactionContext;
@@ -66,7 +65,13 @@ public class SqlFederatedCacheStore extends AbstractSqlStore implements Federate
 
     @Override
     public void save(ContractOffer contractOffer) {
-        // TODO Validate not null attributes
+
+        Objects.requireNonNull(contractOffer);
+        Objects.requireNonNull(contractOffer.getId());
+        Objects.requireNonNull(contractOffer.getAsset());
+        Objects.requireNonNull(contractOffer.getPolicy());
+        Objects.requireNonNull(contractOffer.getContractStart());
+        Objects.requireNonNull(contractOffer.getContractEnd());
 
         transactionContext.execute(() -> {
             try (var connection = getConnection()) {
@@ -146,12 +151,17 @@ public class SqlFederatedCacheStore extends AbstractSqlStore implements Federate
 
     private ContractOffer mapResultSet(ResultSet resultSet) throws Exception {
 
-        var policy = fromJson(resultSet.getString(statements.getPolicyColumn()), Policy.class);
-        // TODO Implement invalid policy json error
+        Policy policy;
+        try {
+            policy = fromJson(resultSet.getString(statements.getPolicyColumn()), Policy.class);
+        } catch (EdcPersistenceException e) {
+            throw new EdcPersistenceException("Error parsing Policy JSON column", e);
+        }
 
         var assetId = resultSet.getString(statements.getAssetIdColumn());
-        Asset asset = assetIndex.findById(assetId);
-        // TODO Implement assert not found error
+        var asset = assetIndex.findById(assetId);
+        if (asset == null)
+            throw new IllegalStateException("Asset not found with ID: " + assetId);
 
         return ContractOffer.Builder.newInstance()
                 .id(resultSet.getString(statements.getIdColumn()))
@@ -166,7 +176,7 @@ public class SqlFederatedCacheStore extends AbstractSqlStore implements Federate
                 .build();
     }
 
-    private Long mapFromZonedDateTime(ZonedDateTime zonedDateTime) throws Exception {
+    private Long mapFromZonedDateTime(ZonedDateTime zonedDateTime) {
         return zonedDateTime != null ?
                 zonedDateTime.toEpochSecond() :
                 null;

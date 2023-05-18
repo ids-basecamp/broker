@@ -17,7 +17,7 @@ package de.truzzt.edc.extension.catalog.cache.test;
 import de.truzzt.edc.extension.postgresql.migration.DatabaseMigrationManager;
 import de.truzzt.edc.extension.postgresql.migration.FlywayService;
 import org.eclipse.edc.connector.contract.spi.types.offer.ContractOffer;
-import org.eclipse.edc.policy.model.Policy;
+import org.eclipse.edc.policy.model.*;
 import org.eclipse.edc.spi.monitor.ConsoleMonitor;
 import org.eclipse.edc.spi.system.configuration.ConfigFactory;
 import org.eclipse.edc.spi.types.domain.DataAddress;
@@ -28,8 +28,10 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.Map;
+import java.util.UUID;
 
 public class TestUtil {
 
@@ -53,19 +55,29 @@ public class TestUtil {
     }
 
     @NotNull
-    public static ContractOffer createOffer(String id) {
-        var asset = Asset.Builder.newInstance().id(id).build();
-        return createOffer(id, asset);
-    }
-
-    @NotNull
     public static ContractOffer createOffer(String id, Asset asset) {
-        // TODO Change more policy default attributes
-        var policy = Policy.Builder.newInstance().build();
         var now = ZonedDateTime.now(ZoneId.of("Z")).withNano(0);
 
-        URI provider = null;
-        URI consumer = null;
+        var action = Action.Builder.newInstance()
+                .type("USE")
+                .build();
+        var constraint = AtomicConstraint.Builder.newInstance()
+                .operator(Operator.GT)
+                .leftExpression(new LiteralExpression("POLICY_EVALUATION_TIME"))
+                .rightExpression(new LiteralExpression(now.format(DateTimeFormatter.ISO_DATE_TIME)))
+                .build();
+        var permission = Permission.Builder.newInstance()
+                .uid(UUID.randomUUID().toString())
+                .target("test-target")
+                .action(action)
+                .constraint(constraint)
+                .build();
+        var policy = Policy.Builder.newInstance().
+                permission(permission).
+                build();
+
+        URI provider;
+        URI consumer;
         try {
             provider = new URI("http://localhost/" + id + "/provider/");
             consumer = new URI("http://localhost/" + id + "/consumer/");
@@ -95,9 +107,10 @@ public class TestUtil {
 
     @NotNull
     public static DataAddress createDataAddress(String type) {
-        // TODO Change more data address default attributes
         return DataAddress.Builder.newInstance()
                 .type(type)
+                .property("key1", "value1")
+                .property("key2", "value2")
                 .build();
     }
 }
