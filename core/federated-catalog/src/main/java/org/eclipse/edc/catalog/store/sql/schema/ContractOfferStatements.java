@@ -73,6 +73,10 @@ public interface ContractOfferStatements {
 
     String getUpdateTemplate();
 
+    String getUpdateOfferEndTemplate();
+
+    String getDeleteExpiredTemplate();
+
     SqlQueryStatement createQuery(QuerySpec querySpec);
 
     default String getFormatAsJsonOperator() {

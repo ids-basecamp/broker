@@ -35,6 +35,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -77,6 +78,47 @@ class PostgresFederatedCacheStoreTest {
         ContractOffer contractOffer = createContractOffer(99);
 
         federatedCacheStore.save(contractOffer);
+    }
+
+    @Test
+    @DisplayName("Expire all successful")
+    void expire_all_successful() {
+        List<ContractOffer> allContractOffers = createAndSaveContractOffers(10);
+
+        federatedCacheStore.expireAll();
+
+        List<Criterion> query = List.of();
+        var contractOffers = federatedCacheStore.query(query);
+
+        var contractOffersNotExpired = contractOffers.stream()
+                .filter(contractOffer -> Objects.isNull(contractOffer.getOfferEnd()));
+
+        assertThat(contractOffersNotExpired)
+                .isNullOrEmpty();
+
+    }
+
+    @Test
+    @DisplayName("Delete all expired all successful")
+    void delete_all_expired_successful(){
+
+        List<ContractOffer> allContractOffers = createAndSaveContractOffers(10);
+
+        federatedCacheStore.expireAll();
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        federatedCacheStore.deleteExpired();
+        List<Criterion> query = List.of();
+
+        var contractOffersExpired = federatedCacheStore.query(query);
+
+        assertThat(contractOffersExpired)
+                .isNullOrEmpty();
+
+
     }
 
     @Test

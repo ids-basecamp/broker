@@ -82,8 +82,6 @@ public class TestUtil {
                 .asset(asset)
                 .provider(provider)
                 .consumer(consumer)
-                .offerStart(now)
-                .offerEnd(now.plus(1, ChronoUnit.MONTHS))
                 .contractStart(now)
                 .contractEnd(now.plus(12, ChronoUnit.MONTHS))
                 .build();

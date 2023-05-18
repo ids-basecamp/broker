@@ -120,10 +120,28 @@ public class SqlFederatedCacheStore extends AbstractSqlStore implements Federate
 
     @Override
     public void deleteExpired() {
+        transactionContext.execute(() -> {
+            try (var connection = getConnection()) {
+                Long dateInMilis = mapFromZonedDateTime(ZonedDateTime.now());
+                executeQuery(connection, statements.getDeleteExpiredTemplate(), dateInMilis);
+
+            } catch (Exception e) {
+                throw new EdcPersistenceException(e.getMessage(), e);
+            }
+        });
     }
 
     @Override
     public void expireAll() {
+        transactionContext.execute(() -> {
+            try (var connection = getConnection()) {
+                Long dateInMilis = mapFromZonedDateTime(ZonedDateTime.now());
+                executeQuery(connection, statements.getUpdateOfferEndTemplate(), dateInMilis);
+
+            } catch (Exception e) {
+                throw new EdcPersistenceException(e.getMessage(), e);
+            }
+        });
     }
 
     private ContractOffer mapResultSet(ResultSet resultSet) throws Exception {

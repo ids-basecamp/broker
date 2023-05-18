@@ -18,6 +18,8 @@ import org.eclipse.edc.catalog.store.sql.schema.postgres.ContractOfferMapping;
 import org.eclipse.edc.spi.query.QuerySpec;
 import org.eclipse.edc.sql.translation.SqlQueryStatement;
 
+import java.time.ZonedDateTime;
+
 import static java.lang.String.format;
 
 public class BaseSqlDialectStatements implements ContractOfferStatements {
@@ -71,6 +73,19 @@ public class BaseSqlDialectStatements implements ContractOfferStatements {
                 getContractStartColumn(),
                 getContractEndColumn(),
                 getIdColumn());
+    }
+
+    public String getUpdateOfferEndTemplate(){
+        return format("UPDATE %s SET %s = ? WHERE %s IS NULL",
+                getContractOfferTable(),
+                getOfferEndColumn(),
+                getOfferEndColumn());
+    }
+
+    public String getDeleteExpiredTemplate(){
+        return format("DELETE FROM %s WHERE %s < ?",
+                getContractOfferTable(),
+                getOfferEndColumn());
     }
 
     @Override
