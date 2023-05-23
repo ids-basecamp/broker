@@ -14,10 +14,10 @@
 
 package de.truzzt.edc.extension.catalog.cache.sql;
 
-import de.truzzt.edc.extension.catalog.cache.test.TestUtil;
-import de.truzzt.edc.extension.postgresql.migration.DatabaseMigrationManager;
 import de.truzzt.edc.extension.catalog.cache.sql.schema.BaseSqlDialectStatements;
 import de.truzzt.edc.extension.catalog.cache.sql.schema.postgres.PostgresDialectStatements;
+import de.truzzt.edc.extension.catalog.cache.test.TestUtil;
+import de.truzzt.edc.extension.postgresql.migration.DatabaseMigrationManager;
 import org.eclipse.edc.connector.contract.spi.types.offer.ContractOffer;
 import org.eclipse.edc.connector.defaults.storage.assetindex.InMemoryAssetIndex;
 import org.eclipse.edc.junit.annotations.PostgresqlDbIntegrationTest;
@@ -134,15 +134,15 @@ class PostgresFederatedCacheStoreTest {
         var testContractOffers = createAndSaveContractOffers(3);
 
         List<Criterion> query = List.of();
-        var contractOffers = federatedCacheStore.query(query);
+        var contractOffers = federatedCacheStore.query(query).stream().toList();
 
         assertThat(contractOffers)
                 .hasSize(3);
-        assertThat(testContractOffers.get(0).getId())
+        assertThat(contractOffers.get(0).getId())
                 .isEqualTo(testContractOffers.get(0).getId());
-        assertThat(testContractOffers.get(1).getId())
+        assertThat(contractOffers.get(1).getId())
                 .isEqualTo(testContractOffers.get(1).getId());
-        assertThat(testContractOffers.get(2).getId())
+        assertThat(contractOffers.get(2).getId())
                 .isEqualTo(testContractOffers.get(2).getId());
     }
 

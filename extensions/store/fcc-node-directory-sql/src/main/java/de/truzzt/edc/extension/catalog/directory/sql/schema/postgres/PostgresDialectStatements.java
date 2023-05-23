@@ -30,9 +30,6 @@ public class PostgresDialectStatements extends BaseSqlDialectStatements {
 
     @Override
     public SqlQueryStatement createQuery(QuerySpec querySpec) {
-        if (querySpec.containsAnyLeftOperand("selectorExpression.criteria")) {
-            return new SqlQueryStatement(getSelectStatement(), querySpec, new FederatedCacheNodeMapping(this));
-        }
         return super.createQuery(querySpec);
     }
 }

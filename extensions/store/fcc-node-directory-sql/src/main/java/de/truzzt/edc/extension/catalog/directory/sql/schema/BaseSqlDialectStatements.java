@@ -24,40 +24,21 @@ public class BaseSqlDialectStatements implements FederatedCacheNodeStatements {
 
     @Override
     public String getInsertTemplate() {
-        return format("INSERT INTO %s (%s, %s, %s, %s, %s, %s, %s, %s, %s) VALUES (?, ?%s, ?, ?, ?, ?, ?, ?, ?)",
-                getContractOfferTable(),
-                getIdColumn(),
-                getPolicyColumn(),
-                getAssetIdColumn(),
-                getUriProviderColumn(),
-                getUriConsumerColumn(),
-                getOfferStartColumn(),
-                getOfferEndColumn(),
-                getContractStartColumn(),
-                getContractEndColumn(),
+        return format("INSERT INTO %s (%s, %s, %s) VALUES (?, ?, ?%s)",
+                getFederatedCacheNodeTable(),
+                getNameColumn(),
+                getTargetUrlColumn(),
+                getSupportedProtocolsColumn(),
                 getFormatAsJsonOperator()
         );
     }
 
     @Override
-    public String getCountTemplate() {
+    public String getCountByNameTemplate() {
         return format("SELECT COUNT (%s) FROM %s WHERE %s = ?",
-                getIdColumn(),
-                getContractOfferTable(),
-                getIdColumn());
-    }
-
-    public String getUpdateOfferEndTemplate() {
-        return format("UPDATE %s SET %s = ? WHERE %s IS NULL",
-                getContractOfferTable(),
-                getOfferEndColumn(),
-                getOfferEndColumn());
-    }
-
-    public String getDeleteExpiredTemplate() {
-        return format("DELETE FROM %s WHERE %s < ?",
-                getContractOfferTable(),
-                getOfferEndColumn());
+                getNameColumn(),
+                getFederatedCacheNodeTable(),
+                getNameColumn());
     }
 
     @Override
@@ -66,6 +47,6 @@ public class BaseSqlDialectStatements implements FederatedCacheNodeStatements {
     }
 
     protected String getSelectStatement() {
-        return "SELECT * FROM " + getContractOfferTable();
+        return "SELECT * FROM " + getFederatedCacheNodeTable();
     }
 }

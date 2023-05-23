@@ -17,7 +17,12 @@ package de.truzzt.edc.extension.catalog.cache.test;
 import de.truzzt.edc.extension.postgresql.migration.DatabaseMigrationManager;
 import de.truzzt.edc.extension.postgresql.migration.FlywayService;
 import org.eclipse.edc.connector.contract.spi.types.offer.ContractOffer;
-import org.eclipse.edc.policy.model.*;
+import org.eclipse.edc.policy.model.Action;
+import org.eclipse.edc.policy.model.AtomicConstraint;
+import org.eclipse.edc.policy.model.LiteralExpression;
+import org.eclipse.edc.policy.model.Operator;
+import org.eclipse.edc.policy.model.Permission;
+import org.eclipse.edc.policy.model.Policy;
 import org.eclipse.edc.spi.monitor.ConsoleMonitor;
 import org.eclipse.edc.spi.system.configuration.ConfigFactory;
 import org.eclipse.edc.spi.types.domain.DataAddress;
@@ -72,9 +77,9 @@ public class TestUtil {
                 .action(action)
                 .constraint(constraint)
                 .build();
-        var policy = Policy.Builder.newInstance().
-                permission(permission).
-                build();
+        var policy = Policy.Builder.newInstance()
+                .permission(permission)
+                .build();
 
         URI provider;
         URI consumer;

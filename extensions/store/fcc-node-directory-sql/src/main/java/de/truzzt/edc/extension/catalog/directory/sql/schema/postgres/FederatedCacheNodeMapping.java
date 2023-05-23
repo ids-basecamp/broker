@@ -15,24 +15,17 @@
 package de.truzzt.edc.extension.catalog.directory.sql.schema.postgres;
 
 import de.truzzt.edc.extension.catalog.directory.sql.schema.FederatedCacheNodeStatements;
-import org.eclipse.edc.connector.contract.spi.types.offer.ContractOffer;
+import org.eclipse.edc.catalog.spi.FederatedCacheNode;
 import org.eclipse.edc.sql.translation.TranslationMapping;
 
 /**
- * Maps fields of a {@link ContractOffer} onto the
+ * Maps fields of a {@link FederatedCacheNode} onto the
  * corresponding SQL schema (= column names)
  */
 public class FederatedCacheNodeMapping extends TranslationMapping {
     public FederatedCacheNodeMapping(FederatedCacheNodeStatements statements) {
-        add("id", statements.getIdColumn());
-        add("policy", statements.getPolicyColumn());
-        add("asset", statements.getAssetIdColumn());
-        add("uriProvider", statements.getUriProviderColumn());
-        add("uriConsumer", statements.getUriConsumerColumn());
-        add("offerStart", statements.getOfferStartColumn());
-        add("offerEnd", statements.getOfferEndColumn());
-        add("contractStart", statements.getContractStartColumn());
-        add("contractEnd", statements.getContractEndColumn());
-        add("selectorExpression", new SelectorExpressionMapping());
+        add("name", statements.getNameColumn());
+        add("targetUrl", statements.getTargetUrlColumn());
+        add("supportedProtocols", statements.getSupportedProtocolsColumn());
     }
 }

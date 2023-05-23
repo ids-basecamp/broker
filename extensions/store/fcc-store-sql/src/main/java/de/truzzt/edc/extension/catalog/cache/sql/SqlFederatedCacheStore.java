@@ -160,8 +160,9 @@ public class SqlFederatedCacheStore extends AbstractSqlStore implements Federate
 
         var assetId = resultSet.getString(statements.getAssetIdColumn());
         var asset = assetIndex.findById(assetId);
-        if (asset == null)
+        if (asset == null) {
             throw new IllegalStateException("Asset not found with ID: " + assetId);
+        }
 
         return ContractOffer.Builder.newInstance()
                 .id(resultSet.getString(statements.getIdColumn()))

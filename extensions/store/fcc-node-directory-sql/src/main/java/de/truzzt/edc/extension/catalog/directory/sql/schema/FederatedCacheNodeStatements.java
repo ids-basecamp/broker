@@ -19,62 +19,33 @@ import org.eclipse.edc.sql.dialect.BaseSqlDialect;
 import org.eclipse.edc.sql.translation.SqlQueryStatement;
 
 /**
- * Defines all statements that are needed for the ContractOffer store
+ * Defines all statements that are needed for the FederatedCacheNode directory
  */
 public interface FederatedCacheNodeStatements {
 
-    default String getContractOfferTable() {
-        return "edc_contract_offer";
+    default String getFederatedCacheNodeTable() {
+        return "edc_federated_cache_node";
     }
 
-    default String getIdColumn() {
-        return "contract_offer_id";
+    default String getNameColumn() {
+        return "name";
     }
 
-    default String getPolicyColumn() {
-        return "policy";
+    default String getTargetUrlColumn() {
+        return "target_url";
     }
 
-    default String getAssetIdColumn() {
-        return "asset_id";
-    }
-
-    default String getUriProviderColumn() {
-        return "uri_provider";
-    }
-
-    default String getUriConsumerColumn() {
-        return "uri_consumer";
-    }
-
-    default String getOfferStartColumn() {
-        return "offer_start";
-    }
-
-    default String getOfferEndColumn() {
-        return "offer_end";
-    }
-
-    default String getContractStartColumn() {
-        return "contract_start";
-    }
-
-    default String getContractEndColumn() {
-        return "contract_end";
+    default String getSupportedProtocolsColumn() {
+        return "supported_protocols";
     }
 
     String getInsertTemplate();
 
-    String getCountTemplate();
-
-    String getUpdateOfferEndTemplate();
-
-    String getDeleteExpiredTemplate();
+    String getCountByNameTemplate();
 
     SqlQueryStatement createQuery(QuerySpec querySpec);
 
     default String getFormatAsJsonOperator() {
         return BaseSqlDialect.getJsonCastOperator();
     }
-
 }
