@@ -87,5 +87,8 @@ dependencyResolutionManagement {
                 )
             )
         }
+        create("ids") {
+            library("infomodel", "de.fraunhofer.iais.eis.ids.infomodel", "java").version("5.0.3")
+        }
     }
 }

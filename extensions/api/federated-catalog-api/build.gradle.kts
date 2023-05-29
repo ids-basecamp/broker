@@ -23,6 +23,7 @@ dependencies {
     api(project(":spi:federated-catalog-spi"))
 
     runtimeOnly(edc.core.connector)
+    implementation(ids.infomodel)
     implementation(libs.jakarta.rsApi)
     implementation(edc.api.management.config)
 
