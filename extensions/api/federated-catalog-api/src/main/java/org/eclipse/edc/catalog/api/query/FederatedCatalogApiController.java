@@ -14,7 +14,10 @@
 
 package org.eclipse.edc.catalog.api.query;
 
-import jakarta.ws.rs.*;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import org.eclipse.edc.catalog.spi.QueryEngine;
 import org.eclipse.edc.catalog.spi.QueryResponse;

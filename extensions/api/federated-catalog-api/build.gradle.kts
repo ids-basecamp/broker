@@ -20,11 +20,14 @@ plugins {
 dependencies {
     api(edc.spi.core)
     implementation(edc.spi.web)
+    implementation(edc.ids)
+    implementation(edc.iam.mock)
     api(project(":spi:federated-catalog-spi"))
 
     runtimeOnly(edc.core.connector)
     implementation(ids.infomodel)
     implementation(libs.jakarta.rsApi)
+    implementation(libs.jersey.multipart)
     implementation(edc.api.management.config)
 
     // required for integration test
