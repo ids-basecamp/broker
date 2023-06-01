@@ -1,4 +1,4 @@
-package org.eclipse.edc.catalog.api.broker.handler;
+package de.truzzt.edc.extension.broker.api.handler;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.fraunhofer.iais.eis.Connector;

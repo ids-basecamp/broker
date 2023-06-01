@@ -1,7 +1,7 @@
-package org.eclipse.edc.catalog.api.broker;
+package de.truzzt.edc.extension.broker.api;
 
-import org.eclipse.edc.catalog.api.broker.controller.InfrastructureController;
-import org.eclipse.edc.catalog.api.broker.handler.ConnectorUpdateHandler;
+import de.truzzt.edc.extension.broker.api.controller.InfrastructureController;
+import de.truzzt.edc.extension.broker.api.handler.ConnectorUpdateHandler;
 import org.eclipse.edc.catalog.spi.FederatedCacheNodeDirectory;
 import org.eclipse.edc.connector.api.management.configuration.ManagementApiConfiguration;
 import org.eclipse.edc.protocol.ids.api.multipart.handler.Handler;
@@ -20,7 +20,7 @@ import static org.eclipse.edc.protocol.ids.util.ConnectorIdUtil.resolveConnector
 @Extension(value = BrokerApiExtension.NAME)
 public class BrokerApiExtension implements ServiceExtension {
 
-    public static final String NAME = "Broker Infrastructure API Extension";
+    public static final String NAME = "Broker API Extension";
 
     @Inject
     private Monitor monitor;

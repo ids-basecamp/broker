@@ -1,4 +1,4 @@
-package org.eclipse.edc.catalog.api.broker.controller;
+package de.truzzt.edc.extension.broker.api.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
