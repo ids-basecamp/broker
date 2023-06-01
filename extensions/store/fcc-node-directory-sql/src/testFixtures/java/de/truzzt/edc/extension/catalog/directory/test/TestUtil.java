@@ -44,7 +44,7 @@ public class TestUtil {
                 String.format("node-%d", id),
                 String.format("https://localhost:9999/protocol/%d", id),
                 List.of("https", "http")
-                );
+        );
     }
 
 }

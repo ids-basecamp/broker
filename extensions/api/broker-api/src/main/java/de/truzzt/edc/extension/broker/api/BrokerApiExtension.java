@@ -1,13 +1,16 @@
 package de.truzzt.edc.extension.broker.api;
 
 import de.truzzt.edc.extension.broker.api.controller.InfrastructureController;
+import de.truzzt.edc.extension.broker.api.handler.ConnectorUnavailableHandler;
 import de.truzzt.edc.extension.broker.api.handler.ConnectorUpdateHandler;
-import org.eclipse.edc.catalog.spi.FederatedCacheNodeDirectory;
+import de.truzzt.edc.extension.catalog.directory.sql.ext.FederatedCacheNodeDirectoryExt;
+import de.truzzt.edc.extension.catalog.directory.sql.ext.InMemoryNodeDirectory;
 import org.eclipse.edc.connector.api.management.configuration.ManagementApiConfiguration;
 import org.eclipse.edc.protocol.ids.api.multipart.handler.Handler;
 import org.eclipse.edc.protocol.ids.spi.transform.IdsTransformerRegistry;
 import org.eclipse.edc.runtime.metamodel.annotation.Extension;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
+import org.eclipse.edc.runtime.metamodel.annotation.Provider;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
@@ -35,11 +38,16 @@ public class BrokerApiExtension implements ServiceExtension {
     private IdsTransformerRegistry transformerRegistry;
 
     @Inject
-    private FederatedCacheNodeDirectory cacheNodeDirectory;
+    private FederatedCacheNodeDirectoryExt cacheNodeDirectory;
 
     @Override
     public String name() {
         return NAME;
+    }
+
+    @Provider(isDefault = true)
+    public FederatedCacheNodeDirectoryExt defaultNodeDirectory() {
+        return new InMemoryNodeDirectory();
     }
 
     @Override
@@ -50,6 +58,8 @@ public class BrokerApiExtension implements ServiceExtension {
 
         var handlers = new LinkedList<Handler>();
         handlers.add(new ConnectorUpdateHandler(monitor, connectorId, objectMapper, transformerRegistry,
+                cacheNodeDirectory));
+        handlers.add(new ConnectorUnavailableHandler(monitor, connectorId, objectMapper, transformerRegistry,
                 cacheNodeDirectory));
 
         var infrastructureController = new InfrastructureController(monitor, connectorId, objectMapper, handlers);

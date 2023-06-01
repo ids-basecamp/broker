@@ -34,11 +34,17 @@ public class BaseSqlDialectStatements implements FederatedCacheNodeStatements {
     }
 
     @Override
-    public String getCountByNameTemplate() {
-        return format("SELECT COUNT (%s) FROM %s WHERE %s = ?",
-                getNameColumn(),
+    public String getCountByTargetUrlTemplate() {
+        return format("SELECT COUNT (*) FROM %s WHERE %s = ?",
                 getFederatedCacheNodeTable(),
-                getNameColumn());
+                getTargetUrlColumn());
+    }
+
+    @Override
+    public String getDeleteByTargetUrlTemplate() {
+        return format("DELETE FROM %s WHERE %s = ?",
+                getFederatedCacheNodeTable(),
+                getTargetUrlColumn());
     }
 
     @Override

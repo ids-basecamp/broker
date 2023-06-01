@@ -19,10 +19,11 @@ plugins {
 
 dependencies {
     api(edc.spi.core)
+    api(project(":spi:federated-catalog-spi"))
     implementation(edc.spi.web)
     implementation(edc.ids)
     implementation(edc.iam.mock)
-    api(project(":spi:federated-catalog-spi"))
+    implementation(project(":extensions:store:fcc-node-directory-sql"))
 
     runtimeOnly(edc.core.connector)
     implementation(ids.infomodel)
