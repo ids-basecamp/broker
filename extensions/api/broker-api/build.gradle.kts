@@ -23,7 +23,6 @@ dependencies {
     implementation(edc.spi.web)
     implementation(edc.ids)
     implementation(edc.iam.mock)
-    implementation(project(":extensions:store:fcc-node-directory-sql"))
 
     runtimeOnly(edc.core.connector)
     implementation(ids.infomodel)

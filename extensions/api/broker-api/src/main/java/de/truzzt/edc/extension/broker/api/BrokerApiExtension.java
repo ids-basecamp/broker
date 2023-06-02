@@ -3,8 +3,8 @@ package de.truzzt.edc.extension.broker.api;
 import de.truzzt.edc.extension.broker.api.controller.InfrastructureController;
 import de.truzzt.edc.extension.broker.api.handler.ConnectorUnavailableHandler;
 import de.truzzt.edc.extension.broker.api.handler.ConnectorUpdateHandler;
-import de.truzzt.edc.extension.catalog.directory.sql.ext.FederatedCacheNodeDirectoryExt;
-import de.truzzt.edc.extension.catalog.directory.sql.ext.InMemoryNodeDirectory;
+import org.eclipse.edc.catalog.spi.directory.FederatedCacheNodeDirectory;
+import org.eclipse.edc.catalog.spi.directory.InMemoryNodeDirectory;
 import org.eclipse.edc.connector.api.management.configuration.ManagementApiConfiguration;
 import org.eclipse.edc.protocol.ids.api.multipart.handler.Handler;
 import org.eclipse.edc.protocol.ids.spi.transform.IdsTransformerRegistry;
@@ -38,7 +38,7 @@ public class BrokerApiExtension implements ServiceExtension {
     private IdsTransformerRegistry transformerRegistry;
 
     @Inject
-    private FederatedCacheNodeDirectoryExt cacheNodeDirectory;
+    private FederatedCacheNodeDirectory cacheNodeDirectory;
 
     @Override
     public String name() {
@@ -46,7 +46,7 @@ public class BrokerApiExtension implements ServiceExtension {
     }
 
     @Provider(isDefault = true)
-    public FederatedCacheNodeDirectoryExt defaultNodeDirectory() {
+    public FederatedCacheNodeDirectory defaultNodeDirectory() {
         return new InMemoryNodeDirectory();
     }
 

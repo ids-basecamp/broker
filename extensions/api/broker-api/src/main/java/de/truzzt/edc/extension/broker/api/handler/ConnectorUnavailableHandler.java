@@ -2,8 +2,8 @@ package de.truzzt.edc.extension.broker.api.handler;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.fraunhofer.iais.eis.ConnectorUnavailableMessage;
-import de.truzzt.edc.extension.catalog.directory.sql.ext.FederatedCacheNodeDirectoryExt;
 import org.eclipse.edc.catalog.spi.FederatedCacheNode;
+import org.eclipse.edc.catalog.spi.directory.FederatedCacheNodeDirectory;
 import org.eclipse.edc.protocol.ids.api.multipart.handler.Handler;
 import org.eclipse.edc.protocol.ids.api.multipart.message.MultipartRequest;
 import org.eclipse.edc.protocol.ids.api.multipart.message.MultipartResponse;
@@ -22,14 +22,14 @@ public class ConnectorUnavailableHandler implements Handler {
     private final IdsId connectorId;
     private final IdsTransformerRegistry transformerRegistry;
 
-    private FederatedCacheNodeDirectoryExt cacheNodeDirectory;
+    private FederatedCacheNodeDirectory cacheNodeDirectory;
 
     public ConnectorUnavailableHandler(
             @NotNull Monitor monitor,
             @NotNull IdsId connectorId,
             @NotNull ObjectMapper objectMapper,
             @NotNull IdsTransformerRegistry transformerRegistry,
-            @NotNull FederatedCacheNodeDirectoryExt cacheNodeDirectory) {
+            @NotNull FederatedCacheNodeDirectory cacheNodeDirectory) {
         this.monitor = monitor;
         this.connectorId = connectorId;
         this.objectMapper = objectMapper;

@@ -1,11 +1,11 @@
-package de.truzzt.edc.extension.catalog.directory.sql.ext;
+package org.eclipse.edc.catalog.spi.directory;
 
 import org.eclipse.edc.catalog.spi.FederatedCacheNode;
 
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-public class InMemoryNodeDirectory implements FederatedCacheNodeDirectoryExt {
+public class InMemoryNodeDirectory implements FederatedCacheNodeDirectory {
     private final List<FederatedCacheNode> cache = new CopyOnWriteArrayList<>();
 
     @Override
@@ -21,7 +21,7 @@ public class InMemoryNodeDirectory implements FederatedCacheNodeDirectoryExt {
     @Override
     public boolean delete(FederatedCacheNode node) {
         var existingNode = cache.stream()
-                .filter(f -> f.getTargetUrl().equals(node.getTargetUrl()))
+                .filter(f -> f.getName().equals(node.getName()))
                 .findFirst();
 
         if (existingNode.isEmpty()) {

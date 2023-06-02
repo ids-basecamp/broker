@@ -15,9 +15,9 @@
 package de.truzzt.edc.extension.catalog.directory.sql;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import de.truzzt.edc.extension.catalog.directory.sql.ext.FederatedCacheNodeDirectoryExt;
 import de.truzzt.edc.extension.catalog.directory.sql.schema.FederatedCacheNodeStatements;
 import org.eclipse.edc.catalog.spi.FederatedCacheNode;
+import org.eclipse.edc.catalog.spi.directory.FederatedCacheNodeDirectory;
 import org.eclipse.edc.spi.persistence.EdcPersistenceException;
 import org.eclipse.edc.spi.query.QuerySpec;
 import org.eclipse.edc.sql.store.AbstractSqlStore;
@@ -36,11 +36,11 @@ import static org.eclipse.edc.sql.SqlQueryExecutor.executeQuery;
 /**
  * An ephemeral SQL cache node directory.
  */
-public class SqlFederatedNodeDirectory extends AbstractSqlStore implements FederatedCacheNodeDirectoryExt {
+public class SqlFederatedNodeDirectory extends AbstractSqlStore implements FederatedCacheNodeDirectory {
 
     private final FederatedCacheNodeStatements statements;
 
-    private final String federatedCacheNodeExistsMessage = "Federated Cache Node with Target URL %s already exists";
+    private final String federatedCacheNodeExistsMessage = "Federated Cache Node with Name %s already exists";
 
 
     public SqlFederatedNodeDirectory(DataSourceRegistry dataSourceRegistry,
@@ -75,8 +75,8 @@ public class SqlFederatedNodeDirectory extends AbstractSqlStore implements Feder
 
         transactionContext.execute(() -> {
             try (var connection = getConnection()) {
-                if (existsByTargetUrl(connection, federatedCacheNode.getTargetUrl())) {
-                    throw new EdcPersistenceException(String.format(federatedCacheNodeExistsMessage, federatedCacheNode.getTargetUrl()));
+                if (existsByName(connection, federatedCacheNode.getName())) {
+                    throw new EdcPersistenceException(String.format(federatedCacheNodeExistsMessage, federatedCacheNode.getName()));
                 }
 
                 executeQuery(connection, statements.getInsertTemplate(),
@@ -94,16 +94,16 @@ public class SqlFederatedNodeDirectory extends AbstractSqlStore implements Feder
     @Override
     public boolean delete(FederatedCacheNode federatedCacheNode) {
         Objects.requireNonNull(federatedCacheNode);
-        Objects.requireNonNull(federatedCacheNode.getTargetUrl());
+        Objects.requireNonNull(federatedCacheNode.getName());
 
         var deleted = transactionContext.execute(() -> {
             try (var connection = getConnection()) {
-                if (!existsByTargetUrl(connection, federatedCacheNode.getTargetUrl())) {
+                if (!existsByName(connection, federatedCacheNode.getName())) {
                     return false;
                 }
 
-                executeQuery(connection, statements.getDeleteByTargetUrlTemplate(),
-                        federatedCacheNode.getTargetUrl());
+                executeQuery(connection, statements.getDeleteByNameTemplate(),
+                        federatedCacheNode.getName());
                 return true;
             } catch (Exception e) {
                 throw new EdcPersistenceException(e.getMessage(), e);
@@ -127,9 +127,9 @@ public class SqlFederatedNodeDirectory extends AbstractSqlStore implements Feder
                 supportedProtocols);
     }
 
-    private boolean existsByTargetUrl(Connection connection, String targetUrl) {
-        var sql = statements.getCountByTargetUrlTemplate();
-        try (var stream = executeQuery(connection, false, this::mapCount, sql, targetUrl)) {
+    private boolean existsByName(Connection connection, String name) {
+        var sql = statements.getCountByNameTemplate();
+        try (var stream = executeQuery(connection, false, this::mapCount, sql, name)) {
             return stream.findFirst().orElse(0L) > 0;
         }
     }

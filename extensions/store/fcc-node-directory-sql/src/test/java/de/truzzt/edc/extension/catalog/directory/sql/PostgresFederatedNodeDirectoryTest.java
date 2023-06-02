@@ -90,7 +90,7 @@ class PostgresFederatedNodeDirectoryTest {
     }
 
     @Test
-    @DisplayName("Insert duplicated Target URL error")
+    @DisplayName("Insert duplicated Name error")
     void insert_duplicated_id_error() {
         var federatedCacheNode1 = TestUtil.createFederatedCacheNode(99);
 
@@ -100,7 +100,7 @@ class PostgresFederatedNodeDirectoryTest {
 
         assertThatThrownBy(() -> federatedNodeDirectory.insert(federatedCacheNode2))
                 .isInstanceOf(EdcPersistenceException.class)
-                .hasMessageStartingWith("Federated Cache Node with Target URL")
+                .hasMessageStartingWith("Federated Cache Node with Name")
                 .hasMessageEndingWith("already exists");
     }
 

@@ -41,9 +41,9 @@ public interface FederatedCacheNodeStatements {
 
     String getInsertTemplate();
 
-    String getCountByTargetUrlTemplate();
+    String getCountByNameTemplate();
 
-    String getDeleteByTargetUrlTemplate();
+    String getDeleteByNameTemplate();
 
     SqlQueryStatement createQuery(QuerySpec querySpec);
 

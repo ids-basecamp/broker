@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 
-FROM gradle:7-jdk17 AS build
+FROM gradle:7.5-jdk17-alpine AS build
 
 # COPY --from=prepare /root/.m2 /root/.m2
 COPY --chown=gradle:gradle . /home/gradle/project/
