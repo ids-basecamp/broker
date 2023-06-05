@@ -11,9 +11,9 @@ import jakarta.ws.rs.core.MediaType;
 import org.eclipse.edc.protocol.ids.api.multipart.handler.Handler;
 import org.eclipse.edc.protocol.ids.api.multipart.message.MultipartRequest;
 import org.eclipse.edc.protocol.ids.api.multipart.message.MultipartResponse;
+import org.eclipse.edc.protocol.ids.spi.service.DynamicAttributeTokenService;
 import org.eclipse.edc.protocol.ids.spi.types.IdsId;
 import org.eclipse.edc.spi.EdcException;
-import org.eclipse.edc.spi.iam.ClaimToken;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.glassfish.jersey.media.multipart.FormDataBodyPart;
 import org.glassfish.jersey.media.multipart.FormDataMultiPart;
@@ -24,8 +24,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
-import static org.eclipse.edc.protocol.ids.api.multipart.util.ResponseUtil.malformedMessage;
-import static org.eclipse.edc.protocol.ids.api.multipart.util.ResponseUtil.messageTypeNotSupported;
+import static java.lang.String.format;
+import static org.eclipse.edc.protocol.ids.api.multipart.util.ResponseUtil.*;
 
 @Consumes({MediaType.MULTIPART_FORM_DATA})
 @Produces({MediaType.MULTIPART_FORM_DATA})
@@ -40,15 +40,21 @@ public class InfrastructureController {
     private final IdsId connectorId;
     private final List<Handler> multipartHandlers;
     private final ObjectMapper objectMapper;
+    private final DynamicAttributeTokenService tokenService;
+    private final String idsWebhookAddress;
 
     public InfrastructureController(@NotNull Monitor monitor,
                                    @NotNull IdsId connectorId,
                                    @NotNull ObjectMapper objectMapper,
-                                   @NotNull List<Handler> multipartHandlers) {
+                                    @NotNull DynamicAttributeTokenService tokenService,
+                                    @NotNull List<Handler> multipartHandlers,
+                                    @NotNull String idsWebhookAddress) {
         this.monitor = monitor;
         this.connectorId = connectorId;
         this.objectMapper = objectMapper;
+        this.tokenService = tokenService;
         this.multipartHandlers = multipartHandlers;
+        this.idsWebhookAddress = idsWebhookAddress;
     }
 
     @POST
@@ -74,12 +80,27 @@ public class InfrastructureController {
             return createFormDataMultiPart(malformedMessage(header, connectorId));
         }
 
+        // Check if DAT present
+        var dynamicAttributeToken = header.getSecurityToken();
+        if (dynamicAttributeToken == null || dynamicAttributeToken.getTokenValue() == null) {
+            monitor.warning("InfrastructureController: Token is missing in header");
+            return createFormDataMultiPart(notAuthenticated(header, connectorId));
+        }
+
+        // Validate DAT
+        var verificationResult = tokenService
+                .verifyDynamicAttributeToken(dynamicAttributeToken, header.getIssuerConnector(), idsWebhookAddress);
+        if (verificationResult.failed()) {
+            monitor.warning(format("InfrastructureController: Token validation failed %s", verificationResult.getFailure().getMessages()));
+            return createFormDataMultiPart(notAuthenticated(header, connectorId));
+        }
+
         // Build the multipart request
-        var emptyClaimToken = ClaimToken.Builder.newInstance().build();
+        var claimToken = verificationResult.getContent();
         var multipartRequest = MultipartRequest.Builder.newInstance()
                 .header(header)
                 .payload(payload)
-                .claimToken(emptyClaimToken)
+                .claimToken(claimToken)
                 .build();
 
         var multipartResponse = multipartHandlers.stream()

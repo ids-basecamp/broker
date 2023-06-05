@@ -6,7 +6,9 @@ import de.truzzt.edc.extension.broker.api.handler.ConnectorUpdateHandler;
 import org.eclipse.edc.catalog.spi.directory.FederatedCacheNodeDirectory;
 import org.eclipse.edc.catalog.spi.directory.InMemoryNodeDirectory;
 import org.eclipse.edc.connector.api.management.configuration.ManagementApiConfiguration;
+import org.eclipse.edc.protocol.ids.api.configuration.IdsApiConfiguration;
 import org.eclipse.edc.protocol.ids.api.multipart.handler.Handler;
+import org.eclipse.edc.protocol.ids.spi.service.DynamicAttributeTokenService;
 import org.eclipse.edc.protocol.ids.spi.transform.IdsTransformerRegistry;
 import org.eclipse.edc.runtime.metamodel.annotation.Extension;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
@@ -32,7 +34,12 @@ public class BrokerApiExtension implements ServiceExtension {
     private WebService webService;
 
     @Inject
+    private DynamicAttributeTokenService dynamicAttributeTokenService;
+
+    @Inject
     private ManagementApiConfiguration managementApiConfig;
+    @Inject
+    private IdsApiConfiguration idsApiConfiguration;
 
     @Inject
     private IdsTransformerRegistry transformerRegistry;
@@ -62,7 +69,8 @@ public class BrokerApiExtension implements ServiceExtension {
         handlers.add(new ConnectorUnavailableHandler(monitor, connectorId, objectMapper, transformerRegistry,
                 cacheNodeDirectory));
 
-        var infrastructureController = new InfrastructureController(monitor, connectorId, objectMapper, handlers);
+        var infrastructureController = new InfrastructureController(monitor, connectorId, objectMapper,
+                dynamicAttributeTokenService, handlers, idsApiConfiguration.getIdsWebhookAddress());
         webService.registerResource(managementApiConfig.getContextAlias(), infrastructureController);
     }
 }
