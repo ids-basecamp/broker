@@ -9,7 +9,7 @@
  *
  *  Contributors:
  *       Microsoft Corporation - initial API and implementation
- *
+ *       truzzt GmbH - psql implementation
  */
 
 package de.truzzt.edc.extension.catalog.cache.sql;
