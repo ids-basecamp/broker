@@ -68,6 +68,7 @@ public class InfrastructureController {
         try {
             header = objectMapper.readValue(headerInputStream, Message.class);
         } catch (IOException e) {
+            monitor.warning(format("InfrastructureController: Header parsing failed: %s", e.getMessage()));
             return createFormDataMultiPart(malformedMessage(null, connectorId));
         }
 
@@ -91,7 +92,7 @@ public class InfrastructureController {
         var verificationResult = tokenService
                 .verifyDynamicAttributeToken(dynamicAttributeToken, header.getIssuerConnector(), idsWebhookAddress);
         if (verificationResult.failed()) {
-            monitor.warning(format("InfrastructureController: Token validation failed %s", verificationResult.getFailure().getMessages()));
+            monitor.warning(format("InfrastructureController: Token validation failed: %s", verificationResult.getFailure().getMessages()));
             return createFormDataMultiPart(notAuthenticated(header, connectorId));
         }
 

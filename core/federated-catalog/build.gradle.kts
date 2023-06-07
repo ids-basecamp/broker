@@ -24,6 +24,7 @@ dependencies {
 
     implementation(edc.util)
     implementation(edc.core.connector)
+    implementation(ids.infomodel)
 
     implementation(libs.okhttp)
 

@@ -20,8 +20,10 @@ plugins {
 dependencies {
     api(edc.spi.core)
     api(project(":spi:federated-catalog-spi"))
+
     implementation(edc.spi.web)
     implementation(edc.ids)
+    implementation(edc.spi.ids)
     implementation(edc.iam.mock)
 
     runtimeOnly(edc.core.connector)
