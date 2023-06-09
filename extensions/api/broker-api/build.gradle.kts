@@ -21,13 +21,11 @@ dependencies {
     api(edc.spi.core)
     api(project(":spi:federated-catalog-spi"))
 
-    implementation(edc.spi.web)
-    implementation(edc.ids)
-    implementation(edc.spi.ids)
-    implementation(edc.iam.mock)
-
     runtimeOnly(edc.core.connector)
+
+    implementation(edc.ids)
     implementation(ids.infomodel)
+    implementation(edc.ids.jsonld.serdes)
     implementation(libs.jakarta.rsApi)
     implementation(libs.jersey.multipart)
     implementation(edc.api.management.config)

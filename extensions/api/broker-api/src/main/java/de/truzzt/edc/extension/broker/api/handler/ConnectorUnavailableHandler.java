@@ -2,19 +2,18 @@ package de.truzzt.edc.extension.broker.api.handler;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.fraunhofer.iais.eis.ConnectorUnavailableMessage;
+import de.truzzt.edc.extension.broker.api.message.MultipartRequest;
+import de.truzzt.edc.extension.broker.api.message.MultipartResponse;
 import org.eclipse.edc.catalog.spi.FederatedCacheNode;
 import org.eclipse.edc.catalog.spi.directory.FederatedCacheNodeDirectory;
-import org.eclipse.edc.protocol.ids.api.multipart.handler.Handler;
-import org.eclipse.edc.protocol.ids.api.multipart.message.MultipartRequest;
-import org.eclipse.edc.protocol.ids.api.multipart.message.MultipartResponse;
 import org.eclipse.edc.protocol.ids.spi.transform.IdsTransformerRegistry;
 import org.eclipse.edc.protocol.ids.spi.types.IdsId;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.jetbrains.annotations.NotNull;
 
-import static org.eclipse.edc.protocol.ids.api.multipart.util.ResponseUtil.createMultipartResponse;
-import static org.eclipse.edc.protocol.ids.api.multipart.util.ResponseUtil.internalRecipientError;
-import static org.eclipse.edc.protocol.ids.api.multipart.util.ResponseUtil.messageProcessedNotification;
+import static de.truzzt.edc.extension.broker.api.util.ResponseUtil.createMultipartResponse;
+import static de.truzzt.edc.extension.broker.api.util.ResponseUtil.internalRecipientError;
+import static de.truzzt.edc.extension.broker.api.util.ResponseUtil.messageProcessedNotification;
 
 public class ConnectorUnavailableHandler implements Handler {
     private final Monitor monitor;

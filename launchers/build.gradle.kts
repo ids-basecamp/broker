@@ -26,6 +26,7 @@ dependencies {
     runtimeOnly(project(":extensions:store:fcc-store-sql"))
     runtimeOnly(project(":extensions:store:postgres-flyway"))
     runtimeOnly(edc.bundles.connector)
+    runtimeOnly(edc.iam.mock)
 }
 
 application {

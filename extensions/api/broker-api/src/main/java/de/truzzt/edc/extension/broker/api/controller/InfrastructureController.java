@@ -2,15 +2,16 @@ package de.truzzt.edc.extension.broker.api.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import de.fraunhofer.iais.eis.ConnectorUpdateMessage;
 import de.fraunhofer.iais.eis.Message;
+import de.truzzt.edc.extension.broker.api.handler.Handler;
+import de.truzzt.edc.extension.broker.api.message.MultipartRequest;
+import de.truzzt.edc.extension.broker.api.message.MultipartResponse;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
-import org.eclipse.edc.protocol.ids.api.multipart.handler.Handler;
-import org.eclipse.edc.protocol.ids.api.multipart.message.MultipartRequest;
-import org.eclipse.edc.protocol.ids.api.multipart.message.MultipartResponse;
 import org.eclipse.edc.protocol.ids.spi.service.DynamicAttributeTokenService;
 import org.eclipse.edc.protocol.ids.spi.types.IdsId;
 import org.eclipse.edc.spi.EdcException;
@@ -22,10 +23,13 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
+import static de.truzzt.edc.extension.broker.api.util.ResponseUtil.malformedMessage;
+import static de.truzzt.edc.extension.broker.api.util.ResponseUtil.messageTypeNotSupported;
+import static de.truzzt.edc.extension.broker.api.util.ResponseUtil.notAuthenticated;
 import static java.lang.String.format;
-import static org.eclipse.edc.protocol.ids.api.multipart.util.ResponseUtil.*;
 
 @Consumes({MediaType.MULTIPART_FORM_DATA})
 @Produces({MediaType.MULTIPART_FORM_DATA})
@@ -62,6 +66,13 @@ public class InfrastructureController {
                                      @FormDataParam(PAYLOAD) String payload) {
         if (headerInputStream == null) {
             return createFormDataMultiPart(malformedMessage(null, connectorId));
+        }
+
+        String headerJson = null;
+        try {
+            headerJson = new String(headerInputStream.readAllBytes(), StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            monitor.info(format("InfrastructureController: Received Header: %s", headerJson));
         }
 
         Message header;

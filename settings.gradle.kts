@@ -58,6 +58,7 @@ dependencyResolutionManagement {
             library("ext-http", "org.eclipse.edc", "http").versionRef("edc")
             library("spi-ids", "org.eclipse.edc", "ids-spi").versionRef("edc")
             library("ids", "org.eclipse.edc", "ids").versionRef("edc")
+            library("ids-jsonld-serdes", "org.eclipse.edc", "ids-jsonld-serdes").versionRef("edc")
             library("iam-mock", "org.eclipse.edc", "iam-mock").versionRef("edc")
             library("sql-core", "org.eclipse.edc", "sql-core").versionRef("edc")
             library("sql-pool", "org.eclipse.edc", "sql-pool-apache-commons").versionRef("edc")

@@ -3,11 +3,10 @@ package de.truzzt.edc.extension.broker.api.handler;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.fraunhofer.iais.eis.Connector;
 import de.fraunhofer.iais.eis.ConnectorUpdateMessage;
+import de.truzzt.edc.extension.broker.api.message.MultipartRequest;
+import de.truzzt.edc.extension.broker.api.message.MultipartResponse;
 import org.eclipse.edc.catalog.spi.FederatedCacheNode;
 import org.eclipse.edc.catalog.spi.directory.FederatedCacheNodeDirectory;
-import org.eclipse.edc.protocol.ids.api.multipart.handler.Handler;
-import org.eclipse.edc.protocol.ids.api.multipart.message.MultipartRequest;
-import org.eclipse.edc.protocol.ids.api.multipart.message.MultipartResponse;
 import org.eclipse.edc.protocol.ids.spi.transform.IdsTransformerRegistry;
 import org.eclipse.edc.protocol.ids.spi.types.IdsId;
 import org.eclipse.edc.protocol.ids.spi.types.MessageProtocol;
@@ -17,10 +16,10 @@ import org.jetbrains.annotations.NotNull;
 import java.io.IOException;
 import java.util.List;
 
-import static org.eclipse.edc.protocol.ids.api.multipart.util.ResponseUtil.badParameters;
-import static org.eclipse.edc.protocol.ids.api.multipart.util.ResponseUtil.createMultipartResponse;
-import static org.eclipse.edc.protocol.ids.api.multipart.util.ResponseUtil.internalRecipientError;
-import static org.eclipse.edc.protocol.ids.api.multipart.util.ResponseUtil.messageProcessedNotification;
+import static de.truzzt.edc.extension.broker.api.util.ResponseUtil.badParameters;
+import static de.truzzt.edc.extension.broker.api.util.ResponseUtil.createMultipartResponse;
+import static de.truzzt.edc.extension.broker.api.util.ResponseUtil.internalRecipientError;
+import static de.truzzt.edc.extension.broker.api.util.ResponseUtil.messageProcessedNotification;
 
 public class ConnectorUpdateHandler implements Handler {
     private final Monitor monitor;
