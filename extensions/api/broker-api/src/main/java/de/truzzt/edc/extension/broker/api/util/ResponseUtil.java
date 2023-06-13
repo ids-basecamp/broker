@@ -1,12 +1,9 @@
 package de.truzzt.edc.extension.broker.api.util;
 
-import de.fraunhofer.iais.eis.Message;
-import de.fraunhofer.iais.eis.MessageProcessedNotificationMessage;
-import de.fraunhofer.iais.eis.MessageProcessedNotificationMessageBuilder;
-import de.fraunhofer.iais.eis.RejectionMessage;
-import de.fraunhofer.iais.eis.RejectionMessageBuilder;
-import de.fraunhofer.iais.eis.RejectionReason;
 import de.truzzt.edc.extension.broker.api.message.MultipartResponse;
+import de.truzzt.edc.extension.broker.api.util.dto.Message;
+import de.truzzt.edc.extension.broker.api.util.dto.RejectionMessage;
+import de.truzzt.edc.extension.broker.api.util.dto.RejectionReason;
 import org.eclipse.edc.protocol.ids.spi.domain.IdsConstants;
 import org.eclipse.edc.protocol.ids.spi.types.IdsId;
 import org.eclipse.edc.protocol.ids.spi.types.IdsType;
@@ -35,81 +32,87 @@ public class ResponseUtil {
                 .build();
     }
 
-    public static MessageProcessedNotificationMessage messageProcessedNotification(@NotNull Message correlationMessage,
+    public static Message messageProcessedNotification(@NotNull Message correlationMessage,
                                                                                    @NotNull IdsId connectorId) {
         var messageId = getMessageId();
 
-        return new MessageProcessedNotificationMessageBuilder(messageId)
-                ._contentVersion_(IdsConstants.INFORMATION_MODEL_VERSION)
-                ._modelVersion_(IdsConstants.INFORMATION_MODEL_VERSION)
-                ._issued_(gregorianNow())
-                ._issuerConnector_(connectorId.toUri())
-                ._senderAgent_(connectorId.toUri())
-                ._correlationMessage_(correlationMessage.getId())
-                ._recipientConnector_(new ArrayList<>(Collections.singletonList(correlationMessage.getIssuerConnector())))
-                ._recipientAgent_(new ArrayList<>(Collections.singletonList(correlationMessage.getSenderAgent())))
-                .build();
+        Message message =  new Message(messageId);
+        message.setContentVersion(IdsConstants.INFORMATION_MODEL_VERSION);
+        message.setModelVersion(IdsConstants.INFORMATION_MODEL_VERSION);
+        message.setIssued(gregorianNow());
+        message.setIssuerConnector(connectorId.toUri());
+        message.setSenderAgent(connectorId.toUri());
+        message.setCorrelationMessage(correlationMessage.getId());
+        message.setRecipientConnector(new ArrayList<>(Collections.singletonList(correlationMessage.getIssuerConnector())));
+        message.setRecipientAgent(new ArrayList<>(Collections.singletonList(correlationMessage.getSenderAgent())));
+
+        return message;
     }
 
     @NotNull
     public static RejectionMessage notAuthenticated(@NotNull Message correlationMessage,
                                                     @NotNull IdsId connectorId) {
-        return createRejectionMessageBuilder(correlationMessage, connectorId)
-                ._rejectionReason_(RejectionReason.NOT_AUTHENTICATED)
-                .build();
+        RejectionMessage rejectionMessage = createRejectionMessage(correlationMessage, connectorId);
+        rejectionMessage.setRejectionReason(RejectionReason.NOT_AUTHENTICATED);
+
+        return rejectionMessage;
     }
 
     @NotNull
     public static RejectionMessage malformedMessage(@Nullable Message correlationMessage,
-                                                    @NotNull IdsId connectorId) {
-        return createRejectionMessageBuilder(correlationMessage, connectorId)
-                ._rejectionReason_(RejectionReason.MALFORMED_MESSAGE)
-                .build();
+                                                                                                @NotNull IdsId connectorId) {
+        RejectionMessage rejectionMessage = createRejectionMessage(correlationMessage, connectorId);
+        rejectionMessage.setRejectionReason(RejectionReason.MALFORMED_MESSAGE);
+
+        return rejectionMessage;
     }
 
     @NotNull
     public static RejectionMessage messageTypeNotSupported(@NotNull Message correlationMessage,
                                                            @NotNull IdsId connectorId) {
-        return createRejectionMessageBuilder(correlationMessage, connectorId)
-                ._rejectionReason_(RejectionReason.MESSAGE_TYPE_NOT_SUPPORTED)
-                .build();
+        RejectionMessage rejectionMessage = createRejectionMessage(correlationMessage, connectorId);
+        rejectionMessage.setRejectionReason(RejectionReason.MESSAGE_TYPE_NOT_SUPPORTED);
+
+        return rejectionMessage;
     }
 
     @NotNull
     public static RejectionMessage badParameters(@NotNull Message correlationMessage,
                                                  @NotNull IdsId connectorId) {
-        return createRejectionMessageBuilder(correlationMessage, connectorId)
-                ._rejectionReason_(RejectionReason.BAD_PARAMETERS)
-                .build();
+        RejectionMessage rejectionMessage =  createRejectionMessage(correlationMessage, connectorId);
+        rejectionMessage.setRejectionReason(RejectionReason.BAD_PARAMETERS);
+
+        return rejectionMessage;
     }
 
     @NotNull
     public static RejectionMessage internalRecipientError(@NotNull Message correlationMessage,
                                                           @NotNull IdsId connectorId) {
-        return createRejectionMessageBuilder(correlationMessage, connectorId)
-                ._rejectionReason_(RejectionReason.INTERNAL_RECIPIENT_ERROR)
-                .build();
+        RejectionMessage rejectionMessage =  createRejectionMessage(correlationMessage, connectorId);
+        rejectionMessage.setRejectionReason(RejectionReason.INTERNAL_RECIPIENT_ERROR);
+
+        return rejectionMessage;
     }
 
     @NotNull
-    private static RejectionMessageBuilder createRejectionMessageBuilder(@Nullable Message correlationMessage,
-                                                                         @NotNull IdsId connectorId) {
+    private static RejectionMessage createRejectionMessage(@Nullable Message correlationMessage,
+                                                           @NotNull IdsId connectorId) {
         var messageId = getMessageId();
 
-        var builder = new RejectionMessageBuilder(messageId)
-                ._contentVersion_(IdsConstants.INFORMATION_MODEL_VERSION)
-                ._modelVersion_(IdsConstants.INFORMATION_MODEL_VERSION)
-                ._issued_(gregorianNow())
-                ._issuerConnector_(connectorId.toUri())
-                ._senderAgent_(connectorId.toUri());
+        var rejectionMessage = new RejectionMessage(messageId);
+        rejectionMessage.setContentVersion(IdsConstants.INFORMATION_MODEL_VERSION);
+        rejectionMessage.setModelVersion(IdsConstants.INFORMATION_MODEL_VERSION);
+        rejectionMessage.setIssued(gregorianNow());
+        rejectionMessage.setIssuerConnector(connectorId.toUri());
+        rejectionMessage.setSenderAgent(connectorId.toUri());
 
         if (correlationMessage != null) {
-            builder._correlationMessage_(correlationMessage.getId());
-            builder._recipientAgent_(new ArrayList<>(Collections.singletonList(correlationMessage.getSenderAgent())));
-            builder._recipientConnector_(new ArrayList<>(Collections.singletonList(correlationMessage.getIssuerConnector())));
+            rejectionMessage.setCorrelationMessage(correlationMessage.getId());
+            rejectionMessage.setRecipientAgent(new ArrayList<>(Collections.singletonList(correlationMessage.getSenderAgent())));
+            rejectionMessage.setRecipientConnector(new ArrayList<>(Collections.singletonList(correlationMessage.getIssuerConnector())));
         }
 
-        return builder;
+        return rejectionMessage;
     }
 
     private static URI getMessageId() {

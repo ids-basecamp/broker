@@ -2,11 +2,11 @@ package de.truzzt.edc.extension.broker.api.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import de.fraunhofer.iais.eis.ConnectorUpdateMessage;
-import de.fraunhofer.iais.eis.Message;
 import de.truzzt.edc.extension.broker.api.handler.Handler;
 import de.truzzt.edc.extension.broker.api.message.MultipartRequest;
 import de.truzzt.edc.extension.broker.api.message.MultipartResponse;
+import de.truzzt.edc.extension.broker.api.util.TokenUtil;
+import de.truzzt.edc.extension.broker.api.util.dto.Message;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
@@ -15,6 +15,7 @@ import jakarta.ws.rs.core.MediaType;
 import org.eclipse.edc.protocol.ids.spi.service.DynamicAttributeTokenService;
 import org.eclipse.edc.protocol.ids.spi.types.IdsId;
 import org.eclipse.edc.spi.EdcException;
+import org.eclipse.edc.spi.iam.ClaimToken;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.glassfish.jersey.media.multipart.FormDataBodyPart;
 import org.glassfish.jersey.media.multipart.FormDataMultiPart;
@@ -44,19 +45,16 @@ public class InfrastructureController {
     private final IdsId connectorId;
     private final List<Handler> multipartHandlers;
     private final ObjectMapper objectMapper;
-    private final DynamicAttributeTokenService tokenService;
     private final String idsWebhookAddress;
 
     public InfrastructureController(@NotNull Monitor monitor,
                                    @NotNull IdsId connectorId,
                                    @NotNull ObjectMapper objectMapper,
-                                    @NotNull DynamicAttributeTokenService tokenService,
                                     @NotNull List<Handler> multipartHandlers,
                                     @NotNull String idsWebhookAddress) {
         this.monitor = monitor;
         this.connectorId = connectorId;
         this.objectMapper = objectMapper;
-        this.tokenService = tokenService;
         this.multipartHandlers = multipartHandlers;
         this.idsWebhookAddress = idsWebhookAddress;
     }
@@ -68,17 +66,10 @@ public class InfrastructureController {
             return createFormDataMultiPart(malformedMessage(null, connectorId));
         }
 
-        String headerJson = null;
-        try {
-            headerJson = new String(headerInputStream.readAllBytes(), StandardCharsets.UTF_8);
-        } catch (IOException e) {
-            monitor.info(format("InfrastructureController: Received Header: %s", headerJson));
-        }
-
         Message header;
         try {
-            header = objectMapper.readValue(headerInputStream, Message.class);
-        } catch (IOException e) {
+            header = TokenUtil.parseMessage(headerInputStream, objectMapper);
+        } catch (Exception e) {
             monitor.warning(format("InfrastructureController: Header parsing failed: %s", e.getMessage()));
             return createFormDataMultiPart(malformedMessage(null, connectorId));
         }
@@ -99,20 +90,14 @@ public class InfrastructureController {
             return createFormDataMultiPart(notAuthenticated(header, connectorId));
         }
 
-        // Validate DAT
-        var verificationResult = tokenService
-                .verifyDynamicAttributeToken(dynamicAttributeToken, header.getIssuerConnector(), idsWebhookAddress);
-        if (verificationResult.failed()) {
-            monitor.warning(format("InfrastructureController: Token validation failed: %s", verificationResult.getFailure().getMessages()));
-            return createFormDataMultiPart(notAuthenticated(header, connectorId));
-        }
+
 
         // Build the multipart request
-        var claimToken = verificationResult.getContent();
+        var emptyClaimToken = ClaimToken.Builder.newInstance().build();
         var multipartRequest = MultipartRequest.Builder.newInstance()
                 .header(header)
                 .payload(payload)
-                .claimToken(claimToken)
+                .claimToken(emptyClaimToken)
                 .build();
 
         var multipartResponse = multipartHandlers.stream()

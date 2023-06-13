@@ -2,6 +2,7 @@ package de.truzzt.edc.extension.broker.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.fraunhofer.iais.eis.Message;
+import de.truzzt.edc.extension.broker.api.util.TokenUtil;
 import org.eclipse.edc.protocol.ids.serialization.IdsTypeManagerUtil;
 import org.eclipse.edc.spi.types.TypeManager;
 import org.junit.jupiter.api.Assertions;
@@ -84,8 +85,10 @@ public class ParserTest {
     void testWithToken() throws Exception {
         InputStream headerInputStream = new ByteArrayInputStream(CONNECTOR_UPDATE_MESSAGE_WITH_TOKEN.getBytes());
 
-        var header = objectMapper.readValue(headerInputStream, Message.class);
+        var header = TokenUtil.parseMessage(headerInputStream, objectMapper);
+        var jwt = TokenUtil.parseToken(header, objectMapper);
         Assertions.assertNotNull(header);
+        Assertions.assertNotNull(jwt);
     }
 
     @Test

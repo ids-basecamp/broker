@@ -44,7 +44,7 @@ public class ConnectorUnavailableHandler implements Handler {
     @Override
     public @NotNull MultipartResponse handleRequest(@NotNull MultipartRequest multipartRequest) {
 
-        var header = (ConnectorUnavailableMessage) multipartRequest.getHeader();
+        var header = multipartRequest.getHeader();
 
         boolean deleted;
         try {

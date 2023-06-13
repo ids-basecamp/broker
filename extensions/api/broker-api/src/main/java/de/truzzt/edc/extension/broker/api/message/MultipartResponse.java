@@ -1,7 +1,7 @@
 package de.truzzt.edc.extension.broker.api.message;
 
-import de.fraunhofer.iais.eis.DynamicAttributeToken;
-import de.fraunhofer.iais.eis.Message;
+import de.truzzt.edc.extension.broker.api.util.dto.DynamicAttributeToken;
+import de.truzzt.edc.extension.broker.api.util.dto.Message;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

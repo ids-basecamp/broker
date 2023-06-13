@@ -44,13 +44,13 @@ public class ConnectorUpdateHandler implements Handler {
 
     @Override
     public boolean canHandle(@NotNull MultipartRequest multipartRequest) {
-        return multipartRequest.getHeader() instanceof ConnectorUpdateMessage;
+        return multipartRequest.getHeader().getType().equals("ids:ConnectorUpdateMessage");
     }
 
     @Override
     public @NotNull MultipartResponse handleRequest(@NotNull MultipartRequest multipartRequest) {
 
-        var header = (ConnectorUpdateMessage) multipartRequest.getHeader();
+        var header = multipartRequest.getHeader();
 
         Connector connector;
         try {

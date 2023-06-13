@@ -34,9 +34,6 @@ public class BrokerApiExtension implements ServiceExtension {
     private WebService webService;
 
     @Inject
-    private DynamicAttributeTokenService dynamicAttributeTokenService;
-
-    @Inject
     private ManagementApiConfiguration managementApiConfig;
     @Inject
     private IdsApiConfiguration idsApiConfiguration;
@@ -70,7 +67,7 @@ public class BrokerApiExtension implements ServiceExtension {
                 cacheNodeDirectory));
 
         var infrastructureController = new InfrastructureController(monitor, connectorId, objectMapper,
-                dynamicAttributeTokenService, handlers, idsApiConfiguration.getIdsWebhookAddress());
+                handlers, idsApiConfiguration.getIdsWebhookAddress());
         webService.registerResource(managementApiConfig.getContextAlias(), infrastructureController);
     }
 }
