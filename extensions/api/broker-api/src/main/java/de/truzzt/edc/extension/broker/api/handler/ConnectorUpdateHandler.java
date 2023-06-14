@@ -1,19 +1,17 @@
 package de.truzzt.edc.extension.broker.api.handler;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import de.fraunhofer.iais.eis.Connector;
-import de.fraunhofer.iais.eis.ConnectorUpdateMessage;
 import de.truzzt.edc.extension.broker.api.message.MultipartRequest;
 import de.truzzt.edc.extension.broker.api.message.MultipartResponse;
+import de.truzzt.edc.extension.broker.api.types.TypeManagerUtil;
+import de.truzzt.edc.extension.broker.api.types.jwt.JWTPayload;
 import org.eclipse.edc.catalog.spi.FederatedCacheNode;
 import org.eclipse.edc.catalog.spi.directory.FederatedCacheNodeDirectory;
-import org.eclipse.edc.protocol.ids.spi.transform.IdsTransformerRegistry;
 import org.eclipse.edc.protocol.ids.spi.types.IdsId;
 import org.eclipse.edc.protocol.ids.spi.types.MessageProtocol;
+import org.eclipse.edc.spi.EdcException;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.IOException;
 import java.util.List;
 
 import static de.truzzt.edc.extension.broker.api.util.ResponseUtil.badParameters;
@@ -23,22 +21,19 @@ import static de.truzzt.edc.extension.broker.api.util.ResponseUtil.messageProces
 
 public class ConnectorUpdateHandler implements Handler {
     private final Monitor monitor;
-    private final ObjectMapper objectMapper;
     private final IdsId connectorId;
-    private final IdsTransformerRegistry transformerRegistry;
+    private final TypeManagerUtil typeManagerUtil;
 
-    private FederatedCacheNodeDirectory cacheNodeDirectory;
+    private final FederatedCacheNodeDirectory cacheNodeDirectory;
 
     public ConnectorUpdateHandler(
             @NotNull Monitor monitor,
             @NotNull IdsId connectorId,
-            @NotNull ObjectMapper objectMapper,
-            @NotNull IdsTransformerRegistry transformerRegistry,
+            @NotNull TypeManagerUtil typeManagerUtil,
             @NotNull FederatedCacheNodeDirectory cacheNodeDirectory) {
         this.monitor = monitor;
         this.connectorId = connectorId;
-        this.objectMapper = objectMapper;
-        this.transformerRegistry = transformerRegistry;
+        this.typeManagerUtil = typeManagerUtil;
         this.cacheNodeDirectory = cacheNodeDirectory;
     }
 
@@ -52,17 +47,17 @@ public class ConnectorUpdateHandler implements Handler {
 
         var header = multipartRequest.getHeader();
 
-        Connector connector;
+        JWTPayload jwt;
         try {
-            connector = objectMapper.readValue(multipartRequest.getPayload(), Connector.class);
-        } catch (IOException e) {
-            monitor.severe("ConnectorUpdateHandler: Connector Request is invalid", e);
+            jwt = typeManagerUtil.parseToken(header.getSecurityToken());
+        } catch (EdcException e) {
+            monitor.severe("ConnectorUpdateHandler: Security Token is invalid", e);
             return createMultipartResponse(badParameters(header, connectorId));
         }
 
         try {
             var cacheNode = new FederatedCacheNode(
-                    connector.getTitle().get(0).getValue(),
+                    jwt.getSub(),
                     header.getIssuerConnector().toString(),
                     List.of(MessageProtocol.IDS_MULTIPART)
             );

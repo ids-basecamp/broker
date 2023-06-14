@@ -1,4 +1,4 @@
-package de.truzzt.edc.extension.broker.api.util.dto;
+package de.truzzt.edc.extension.broker.api.types.ids;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
 
@@ -11,7 +11,6 @@ public class RejectionMessage extends Message {
 
     public RejectionMessage() {
     }
-
     public RejectionMessage(URI id) {
         super(id);
     }

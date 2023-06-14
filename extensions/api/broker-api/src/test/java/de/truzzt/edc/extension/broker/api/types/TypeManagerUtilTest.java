@@ -1,10 +1,5 @@
-package de.truzzt.edc.extension.broker.api;
+package de.truzzt.edc.extension.broker.api.types;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import de.fraunhofer.iais.eis.Message;
-import de.truzzt.edc.extension.broker.api.util.TokenUtil;
-import org.eclipse.edc.protocol.ids.serialization.IdsTypeManagerUtil;
-import org.eclipse.edc.spi.types.TypeManager;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -12,13 +7,13 @@ import org.junit.jupiter.api.Test;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
-public class ParserTest {
+public class TypeManagerUtilTest {
 
     private final String CONNECTOR_UPDATE_MESSAGE_WITH_TOKEN =
             """
             {
               "@context" : {
-                "ids" : "https://w3id.org/idsa/core/", 
+                "ids" : "https://w3id.org/idsa/core/",
                 "idsc" : "https://w3id.org/idsa/code/"
               },
               "@type" : "ids:ConnectorUpdateMessage",
@@ -72,30 +67,29 @@ public class ParserTest {
               }
             }""";
 
-    private ObjectMapper objectMapper;
+    private TypeManagerUtil typeManagerUtil;
 
     @BeforeEach
     void setUp() {
-        TypeManager typeManager = new TypeManager();
-        IdsTypeManagerUtil.customizeTypeManager(typeManager);
-        objectMapper = typeManager.getMapper("ids");
+        typeManagerUtil = new TypeManagerUtil();
     }
 
     @Test
-    void testWithToken() throws Exception {
+    void parseMessageWithToken() {
         InputStream headerInputStream = new ByteArrayInputStream(CONNECTOR_UPDATE_MESSAGE_WITH_TOKEN.getBytes());
 
-        var header = TokenUtil.parseMessage(headerInputStream, objectMapper);
-        var jwt = TokenUtil.parseToken(header, objectMapper);
+        var header = typeManagerUtil.parseMessage(headerInputStream);
         Assertions.assertNotNull(header);
+
+        var jwt = typeManagerUtil.parseToken(header.getSecurityToken());
         Assertions.assertNotNull(jwt);
     }
 
     @Test
-    void testWithoutToken() throws Exception {
+    void parseMessageWithoutToken() {
         InputStream headerInputStream = new ByteArrayInputStream(CONNECTOR_UPDATE_MESSAGE_WITHOUT_TOKEN.getBytes());
 
-        var header = objectMapper.readValue(headerInputStream, Message.class);
+        var header = typeManagerUtil.parseMessage(headerInputStream);
         Assertions.assertNotNull(header);
     }
 }

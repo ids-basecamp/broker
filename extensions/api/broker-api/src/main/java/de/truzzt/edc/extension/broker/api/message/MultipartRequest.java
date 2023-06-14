@@ -1,7 +1,7 @@
 package de.truzzt.edc.extension.broker.api.message;
 
 
-import de.truzzt.edc.extension.broker.api.util.dto.Message;
+import de.truzzt.edc.extension.broker.api.types.ids.Message;
 import org.eclipse.edc.spi.iam.ClaimToken;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

@@ -1,4 +1,4 @@
-package de.truzzt.edc.extension.broker.api.util.dto;
+package de.truzzt.edc.extension.broker.api.types.jwt;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
 

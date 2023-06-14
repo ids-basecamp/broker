@@ -1,20 +1,16 @@
 package de.truzzt.edc.extension.broker.api.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import de.truzzt.edc.extension.broker.api.handler.Handler;
 import de.truzzt.edc.extension.broker.api.message.MultipartRequest;
 import de.truzzt.edc.extension.broker.api.message.MultipartResponse;
-import de.truzzt.edc.extension.broker.api.util.TokenUtil;
-import de.truzzt.edc.extension.broker.api.util.dto.Message;
+import de.truzzt.edc.extension.broker.api.types.TypeManagerUtil;
+import de.truzzt.edc.extension.broker.api.types.ids.Message;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
-import org.eclipse.edc.protocol.ids.spi.service.DynamicAttributeTokenService;
 import org.eclipse.edc.protocol.ids.spi.types.IdsId;
-import org.eclipse.edc.spi.EdcException;
 import org.eclipse.edc.spi.iam.ClaimToken;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.glassfish.jersey.media.multipart.FormDataBodyPart;
@@ -22,9 +18,7 @@ import org.glassfish.jersey.media.multipart.FormDataMultiPart;
 import org.glassfish.jersey.media.multipart.FormDataParam;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import static de.truzzt.edc.extension.broker.api.util.ResponseUtil.malformedMessage;
@@ -44,19 +38,16 @@ public class InfrastructureController {
     private final Monitor monitor;
     private final IdsId connectorId;
     private final List<Handler> multipartHandlers;
-    private final ObjectMapper objectMapper;
-    private final String idsWebhookAddress;
+    private final TypeManagerUtil typeManagerUtil;
 
     public InfrastructureController(@NotNull Monitor monitor,
                                    @NotNull IdsId connectorId,
-                                   @NotNull ObjectMapper objectMapper,
-                                    @NotNull List<Handler> multipartHandlers,
-                                    @NotNull String idsWebhookAddress) {
+                                   @NotNull TypeManagerUtil typeManagerUtil,
+                                    @NotNull List<Handler> multipartHandlers) {
         this.monitor = monitor;
         this.connectorId = connectorId;
-        this.objectMapper = objectMapper;
+        this.typeManagerUtil = typeManagerUtil;
         this.multipartHandlers = multipartHandlers;
-        this.idsWebhookAddress = idsWebhookAddress;
     }
 
     @POST
@@ -68,7 +59,7 @@ public class InfrastructureController {
 
         Message header;
         try {
-            header = TokenUtil.parseMessage(headerInputStream, objectMapper);
+            header = typeManagerUtil.parseMessage(headerInputStream);
         } catch (Exception e) {
             monitor.warning(format("InfrastructureController: Header parsing failed: %s", e.getMessage()));
             return createFormDataMultiPart(malformedMessage(null, connectorId));
@@ -89,7 +80,6 @@ public class InfrastructureController {
             monitor.warning("InfrastructureController: Token is missing in header");
             return createFormDataMultiPart(notAuthenticated(header, connectorId));
         }
-
 
 
         // Build the multipart request
@@ -115,7 +105,7 @@ public class InfrastructureController {
         var multiPart = createFormDataMultiPart(header);
 
         if (payload != null) {
-            multiPart.bodyPart(new FormDataBodyPart(PAYLOAD, toJson(payload), MediaType.APPLICATION_JSON_TYPE));
+            multiPart.bodyPart(new FormDataBodyPart(PAYLOAD, typeManagerUtil.toJson(payload), MediaType.APPLICATION_JSON_TYPE));
         }
 
         return multiPart;
@@ -124,16 +114,8 @@ public class InfrastructureController {
     private FormDataMultiPart createFormDataMultiPart(Message header) {
         var multiPart = new FormDataMultiPart();
         if (header != null) {
-            multiPart.bodyPart(new FormDataBodyPart(HEADER, toJson(header), MediaType.APPLICATION_JSON_TYPE));
+            multiPart.bodyPart(new FormDataBodyPart(HEADER, typeManagerUtil.toJson(header), MediaType.APPLICATION_JSON_TYPE));
         }
         return multiPart;
-    }
-
-    private byte[] toJson(Object object) {
-        try {
-            return objectMapper.writeValueAsBytes(object);
-        } catch (JsonProcessingException e) {
-            throw new EdcException(e);
-        }
     }
 }

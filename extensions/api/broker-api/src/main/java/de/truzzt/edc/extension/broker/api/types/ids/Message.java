@@ -1,15 +1,13 @@
-package de.truzzt.edc.extension.broker.api.util.dto;
+package de.truzzt.edc.extension.broker.api.types.ids;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import de.fraunhofer.iais.eis.Token;
 
 import javax.validation.constraints.NotNull;
 import javax.xml.datatype.XMLGregorianCalendar;
 import java.net.URI;
 import java.util.List;
-
 
 public class Message {
 
@@ -43,9 +41,6 @@ public class Message {
     @JsonAlias({"https://w3id.org/idsa/core/issued", "ids:issued", "issued"})
     XMLGregorianCalendar issued;
 
-    @JsonAlias({"https://w3id.org/idsa/core/authorizationToken", "ids:authorizationToken", "authorizationToken"})
-    Token authorizationToken;
-
     @NotNull
     @JsonAlias({"https://w3id.org/idsa/core/securityToken", "ids:securityToken", "securityToken"})
     private DynamicAttributeToken securityToken;
@@ -53,9 +48,6 @@ public class Message {
     @NotNull
     @JsonAlias({"https://w3id.org/idsa/core/senderAgent", "ids:senderAgent", "senderAgent"})
     private URI senderAgent;
-
-    @JsonAlias({"https://w3id.org/idsa/core/transferContract", "ids:transferContract", "transferContract"})
-    URI transferContract;
 
     @JsonAlias({"https://w3id.org/idsa/core/contentVersion", "ids:contentVersion", "contentVersion"})
     String contentVersion;
@@ -142,22 +134,6 @@ public class Message {
 
     public void setIssued(XMLGregorianCalendar issued) {
         this.issued = issued;
-    }
-
-    public Token getAuthorizationToken() {
-        return authorizationToken;
-    }
-
-    public void setAuthorizationToken(Token authorizationToken) {
-        this.authorizationToken = authorizationToken;
-    }
-
-    public URI getTransferContract() {
-        return transferContract;
-    }
-
-    public void setTransferContract(URI transferContract) {
-        this.transferContract = transferContract;
     }
 
     public String getContentVersion() {

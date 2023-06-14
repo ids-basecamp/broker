@@ -1,9 +1,9 @@
 package de.truzzt.edc.extension.broker.api.util;
 
 import de.truzzt.edc.extension.broker.api.message.MultipartResponse;
-import de.truzzt.edc.extension.broker.api.util.dto.Message;
-import de.truzzt.edc.extension.broker.api.util.dto.RejectionMessage;
-import de.truzzt.edc.extension.broker.api.util.dto.RejectionReason;
+import de.truzzt.edc.extension.broker.api.types.ids.Message;
+import de.truzzt.edc.extension.broker.api.types.ids.RejectionMessage;
+import de.truzzt.edc.extension.broker.api.types.ids.RejectionReason;
 import org.eclipse.edc.protocol.ids.spi.domain.IdsConstants;
 import org.eclipse.edc.protocol.ids.spi.types.IdsId;
 import org.eclipse.edc.protocol.ids.spi.types.IdsType;

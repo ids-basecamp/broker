@@ -4,12 +4,10 @@ import de.truzzt.edc.extension.broker.api.controller.InfrastructureController;
 import de.truzzt.edc.extension.broker.api.handler.ConnectorUnavailableHandler;
 import de.truzzt.edc.extension.broker.api.handler.ConnectorUpdateHandler;
 import de.truzzt.edc.extension.broker.api.handler.Handler;
+import de.truzzt.edc.extension.broker.api.types.TypeManagerUtil;
 import org.eclipse.edc.catalog.spi.directory.FederatedCacheNodeDirectory;
 import org.eclipse.edc.catalog.spi.directory.InMemoryNodeDirectory;
 import org.eclipse.edc.connector.api.management.configuration.ManagementApiConfiguration;
-import org.eclipse.edc.protocol.ids.api.configuration.IdsApiConfiguration;
-import org.eclipse.edc.protocol.ids.spi.service.DynamicAttributeTokenService;
-import org.eclipse.edc.protocol.ids.spi.transform.IdsTransformerRegistry;
 import org.eclipse.edc.runtime.metamodel.annotation.Extension;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.runtime.metamodel.annotation.Provider;
@@ -35,11 +33,6 @@ public class BrokerApiExtension implements ServiceExtension {
 
     @Inject
     private ManagementApiConfiguration managementApiConfig;
-    @Inject
-    private IdsApiConfiguration idsApiConfiguration;
-
-    @Inject
-    private IdsTransformerRegistry transformerRegistry;
 
     @Inject
     private FederatedCacheNodeDirectory cacheNodeDirectory;
@@ -58,16 +51,14 @@ public class BrokerApiExtension implements ServiceExtension {
     public void initialize(ServiceExtensionContext context) {
         var connectorId = resolveConnectorId(context);
 
-        var objectMapper = context.getTypeManager().getMapper("ids");
+        var typeManagerUtil = new TypeManagerUtil();
 
         var handlers = new LinkedList<Handler>();
-        handlers.add(new ConnectorUpdateHandler(monitor, connectorId, objectMapper, transformerRegistry,
-                cacheNodeDirectory));
-        handlers.add(new ConnectorUnavailableHandler(monitor, connectorId, objectMapper, transformerRegistry,
-                cacheNodeDirectory));
+        handlers.add(new ConnectorUpdateHandler(monitor, connectorId, typeManagerUtil, cacheNodeDirectory));
+        handlers.add(new ConnectorUnavailableHandler(monitor, connectorId, typeManagerUtil, cacheNodeDirectory));
 
-        var infrastructureController = new InfrastructureController(monitor, connectorId, objectMapper,
-                handlers, idsApiConfiguration.getIdsWebhookAddress());
+        var infrastructureController = new InfrastructureController(monitor, connectorId, typeManagerUtil,
+                handlers);
         webService.registerResource(managementApiConfig.getContextAlias(), infrastructureController);
     }
 }

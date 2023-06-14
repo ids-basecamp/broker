@@ -1,7 +1,10 @@
-package de.truzzt.edc.extension.broker.api.util.dto;
+package de.truzzt.edc.extension.broker.api.types.ids;
 
-import com.fasterxml.jackson.annotation.*;
-import de.fraunhofer.iais.eis.util.VocabUtil;
+import com.fasterxml.jackson.annotation.JsonAlias;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import de.truzzt.edc.extension.broker.api.types.ids.util.VocabUtil;
 
 import javax.validation.constraints.NotNull;
 import java.net.URI;
@@ -13,18 +16,18 @@ public class DynamicAttributeToken {
     @JsonProperty("@id")
     @JsonAlias({"@id", "id"})
     @NotNull
-    protected URI id;
+    private URI id;
 
     @NotNull
     @JsonAlias({"ids:tokenFormat", "tokenFormat"})
-    protected TokenFormat tokenFormat;
+    private TokenFormat tokenFormat;
 
     @NotNull
     @JsonAlias({"ids:tokenValue", "tokenValue"})
-    protected String tokenValue;
+    private String tokenValue;
 
-    protected DynamicAttributeToken() {
-        id = VocabUtil.getInstance().createRandomUrl("dynamicAttributeToken");
+    private DynamicAttributeToken() {
+        id = VocabUtil.createRandomUrl("dynamicAttributeToken");
     }
 
     @JsonProperty("@id")
