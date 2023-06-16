@@ -1,15 +1,18 @@
 package de.truzzt.edc.extension.broker.api.types.ids;
 
-import com.fasterxml.jackson.annotation.JsonAlias;
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.*;
 
 import javax.validation.constraints.NotNull;
 import javax.xml.datatype.XMLGregorianCalendar;
 import java.net.URI;
-import java.util.List;
+import java.util.*;
 
 public class Message {
+
+
+    @JsonProperty("@context")
+    @NotNull
+    private String context;
 
     @JsonProperty("@id")
     @NotNull
@@ -20,37 +23,51 @@ public class Message {
     private String type;
 
     @NotNull
-    @JsonAlias({"https://w3id.org/idsa/core/issuerConnector", "ids:issuerConnector", "issuerConnector"})
+    @JsonProperty("ids:securityToken")
+    @JsonAlias({"ids:securityToken", "securityToken"})
+    private DynamicAttributeToken securityToken;
+
+    @NotNull
+    @JsonProperty("ids:issuerConnector")
+    @JsonAlias({"ids:issuerConnector", "issuerConnector"})
     private URI issuerConnector;
 
     @NotNull
-    @JsonAlias({"https://w3id.org/idsa/core/modelVersion", "ids:modelVersion", "modelVersion"})
+    @JsonProperty("ids:modelVersion")
+    @JsonAlias({"ids:modelVersion", "modelVersion"})
     String modelVersion;
 
-    @JsonAlias({"https://w3id.org/idsa/core/correlationMessage", "ids:correlationMessage", "correlationMessage"})
+    @JsonProperty("ids:correlationMessage")
+    @JsonAlias({"ids:correlationMessage", "correlationMessage"})
     URI correlationMessage;
 
-    @JsonAlias({"https://w3id.org/idsa/core/recipientConnector", "ids:recipientConnector", "recipientConnector"})
+    @JsonProperty("ids:recipientConnector")
+    @JsonAlias({"ids:recipientConnector", "recipientConnector"})
     List<URI> recipientConnector;
 
-    @JsonAlias({"https://w3id.org/idsa/core/recipientAgent", "ids:recipientAgent", "recipientAgent"})
+    @JsonProperty("ids:recipientAgent")
+    @JsonAlias({"ids:recipientAgent", "recipientAgent"})
     List<URI> recipientAgent;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSzzz")
     @NotNull
-    @JsonAlias({"https://w3id.org/idsa/core/issued", "ids:issued", "issued"})
+    @JsonProperty("ids:issued")
+    @JsonAlias({"ids:issued", "issued"})
     XMLGregorianCalendar issued;
 
-    @NotNull
-    @JsonAlias({"https://w3id.org/idsa/core/securityToken", "ids:securityToken", "securityToken"})
-    private DynamicAttributeToken securityToken;
 
     @NotNull
-    @JsonAlias({"https://w3id.org/idsa/core/senderAgent", "ids:senderAgent", "senderAgent"})
+    @JsonProperty("ids:senderAgent")
+    @JsonAlias({"ids:senderAgent", "senderAgent"})
     private URI senderAgent;
 
-    @JsonAlias({"https://w3id.org/idsa/core/contentVersion", "ids:contentVersion", "contentVersion"})
+    @JsonProperty("ids:contentVersion")
+    @JsonAlias({"ids:contentVersion", "contentVersion"})
     String contentVersion;
+
+    // all classes have a generic property array
+    @JsonIgnore
+    protected Map<String, Object> properties;
 
     public Message() {
     }
@@ -63,21 +80,45 @@ public class Message {
         this.securityToken = securityToken;
         this.senderAgent = senderAgent;
     }
-
-    public URI getIssuerConnector() {
-        return issuerConnector;
+    @JsonAnyGetter
+    public Map<String, Object> getProperties() {
+        if (this.properties == null)
+            return null;
+        Iterator<String> iter = this.properties.keySet().iterator();
+        Map<String, Object> resultset = new HashMap<String, Object>();
+        while (iter.hasNext()) {
+            String key = iter.next();
+            resultset.put(key, urifyObjects(this.properties.get(key)));
+        }
+        return resultset;
     }
 
-    public void setIssuerConnector(URI issuerConnector) {
-        this.issuerConnector = issuerConnector;
+    public Object urifyObjects(Object value) {
+        if (value instanceof String && value.toString().startsWith("http")) {
+            try {
+                value = new URI(value.toString());
+            } catch (Exception e) {
+                /* do nothing */ }
+        } else if (value instanceof ArrayList) {
+            ArrayList<Object> result_array = new ArrayList<Object>();
+            ((ArrayList) value).forEach(x -> result_array.add(urifyObjects(x)));
+            return result_array;
+        } else if (value instanceof Map) {
+            Map<String, Object> result_map = new HashMap<String, Object>();
+            ((Map) value).forEach((k, v) -> result_map.put(k.toString(), urifyObjects(v)));
+            return result_map;
+        }
+        return value;
     }
 
-    public DynamicAttributeToken getSecurityToken() {
-        return securityToken;
-    }
-
-    public void setSecurityToken(DynamicAttributeToken securityToken) {
-        this.securityToken = securityToken;
+    @JsonAnySetter
+    public void setProperty(String property, Object value) {
+        if (this.properties == null)
+            this.properties = new HashMap<String, Object>();
+        if (property.startsWith("@")) {
+            return;
+        } ;
+        this.properties.put(property, value);
     }
 
     public URI getId() {
@@ -88,12 +129,20 @@ public class Message {
         this.id = id;
     }
 
-    public URI getSenderAgent() {
-        return senderAgent;
+    public String getType() {
+        return type;
     }
 
-    public void setSenderAgent(URI senderAgent) {
-        this.senderAgent = senderAgent;
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public URI getIssuerConnector() {
+        return issuerConnector;
+    }
+
+    public void setIssuerConnector(URI issuerConnector) {
+        this.issuerConnector = issuerConnector;
     }
 
     public String getModelVersion() {
@@ -136,6 +185,22 @@ public class Message {
         this.issued = issued;
     }
 
+    public DynamicAttributeToken getSecurityToken() {
+        return securityToken;
+    }
+
+    public void setSecurityToken(DynamicAttributeToken securityToken) {
+        this.securityToken = securityToken;
+    }
+
+    public URI getSenderAgent() {
+        return senderAgent;
+    }
+
+    public void setSenderAgent(URI senderAgent) {
+        this.senderAgent = senderAgent;
+    }
+
     public String getContentVersion() {
         return contentVersion;
     }
@@ -144,12 +209,12 @@ public class Message {
         this.contentVersion = contentVersion;
     }
 
-    public String getType() {
-        return type;
+    public String getContext() {
+        return context;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public void setContext(String context) {
+        this.context = context;
     }
 }
 

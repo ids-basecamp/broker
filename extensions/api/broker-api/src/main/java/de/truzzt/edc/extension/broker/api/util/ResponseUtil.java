@@ -19,6 +19,8 @@ import static org.eclipse.edc.protocol.ids.util.CalendarUtil.gregorianNow;
 
 public class ResponseUtil {
 
+    private static final String PROCESSED_NOTIFICATION_TYPE = "ids:MessageProcessedNotificationMessage";
+
     public static MultipartResponse createMultipartResponse(@NotNull Message header) {
         return MultipartResponse.Builder.newInstance()
                 .header(header)
@@ -37,14 +39,14 @@ public class ResponseUtil {
         var messageId = getMessageId();
 
         Message message =  new Message(messageId);
-        message.setContentVersion(IdsConstants.INFORMATION_MODEL_VERSION);
+        message.setContext(correlationMessage.getContext());
+        message.setType(PROCESSED_NOTIFICATION_TYPE);
+        message.setSecurityToken(correlationMessage.getSecurityToken());
+        message.setIssuerConnector(connectorId.toUri());
         message.setModelVersion(IdsConstants.INFORMATION_MODEL_VERSION);
         message.setIssued(gregorianNow());
-        message.setIssuerConnector(connectorId.toUri());
-        message.setSenderAgent(connectorId.toUri());
         message.setCorrelationMessage(correlationMessage.getId());
-        message.setRecipientConnector(new ArrayList<>(Collections.singletonList(correlationMessage.getIssuerConnector())));
-        message.setRecipientAgent(new ArrayList<>(Collections.singletonList(correlationMessage.getSenderAgent())));
+        message.setSenderAgent(connectorId.toUri());
 
         return message;
     }

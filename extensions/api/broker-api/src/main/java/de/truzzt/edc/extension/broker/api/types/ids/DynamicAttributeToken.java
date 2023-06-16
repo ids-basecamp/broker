@@ -1,14 +1,12 @@
 package de.truzzt.edc.extension.broker.api.types.ids;
 
-import com.fasterxml.jackson.annotation.JsonAlias;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.*;
 import de.truzzt.edc.extension.broker.api.types.ids.util.VocabUtil;
 
 import javax.validation.constraints.NotNull;
 import java.net.URI;
 
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "@type")
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonTypeName("ids:DynamicAttributeToken")
 public class DynamicAttributeToken {
