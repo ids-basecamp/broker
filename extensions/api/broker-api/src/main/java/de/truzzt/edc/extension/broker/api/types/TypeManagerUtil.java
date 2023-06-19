@@ -21,8 +21,8 @@ public class TypeManagerUtil {
         this.mapper = JsonLd.getObjectMapper();
     }
 
-    public Message parseMessage(InputStream streamToken)  {
-        try{
+    public Message parseMessage(InputStream streamToken) {
+        try {
             JsonNode jsonMap = mapper.readTree(streamToken);
             return mapper.readValue(jsonMap.toString(), Message.class);
         } catch (IOException e) {
@@ -30,8 +30,7 @@ public class TypeManagerUtil {
         }
     }
 
-    public JWTPayload parseToken(DynamicAttributeToken token){
-
+    public JWTPayload parseToken(DynamicAttributeToken token) {
         try {
             Base64.Decoder decoder = Base64.getUrlDecoder();
             String[] chunks = token.getTokenValue().split("\\.");

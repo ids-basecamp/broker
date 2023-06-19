@@ -1,11 +1,15 @@
 package de.truzzt.edc.extension.broker.api.types.ids;
 
-import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.annotation.JsonAlias;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.net.URI;
+import java.util.List;
+import java.util.Map;
 import javax.validation.constraints.NotNull;
 import javax.xml.datatype.XMLGregorianCalendar;
-import java.net.URI;
-import java.util.*;
 
 public class Message {
 
@@ -71,54 +75,9 @@ public class Message {
 
     public Message() {
     }
+
     public Message(URI id) {
         this.id = id;
-    }
-    public Message(URI id, URI issuerConnector, DynamicAttributeToken securityToken, URI senderAgent) {
-        this.id = id;
-        this.issuerConnector = issuerConnector;
-        this.securityToken = securityToken;
-        this.senderAgent = senderAgent;
-    }
-    @JsonAnyGetter
-    public Map<String, Object> getProperties() {
-        if (this.properties == null)
-            return null;
-        Iterator<String> iter = this.properties.keySet().iterator();
-        Map<String, Object> resultset = new HashMap<String, Object>();
-        while (iter.hasNext()) {
-            String key = iter.next();
-            resultset.put(key, urifyObjects(this.properties.get(key)));
-        }
-        return resultset;
-    }
-
-    public Object urifyObjects(Object value) {
-        if (value instanceof String && value.toString().startsWith("http")) {
-            try {
-                value = new URI(value.toString());
-            } catch (Exception e) {
-                /* do nothing */ }
-        } else if (value instanceof ArrayList) {
-            ArrayList<Object> result_array = new ArrayList<Object>();
-            ((ArrayList) value).forEach(x -> result_array.add(urifyObjects(x)));
-            return result_array;
-        } else if (value instanceof Map) {
-            Map<String, Object> result_map = new HashMap<String, Object>();
-            ((Map) value).forEach((k, v) -> result_map.put(k.toString(), urifyObjects(v)));
-            return result_map;
-        }
-        return value;
-    }
-
-    @JsonAnySetter
-    public void setProperty(String property, Object value) {
-        if (this.properties == null)
-            this.properties = new HashMap<String, Object>();
-        if (property.startsWith("@")) {
-            return;
-        } ;
-        this.properties.put(property, value);
     }
 
     public URI getId() {

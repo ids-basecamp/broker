@@ -5,8 +5,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
-import javax.validation.constraints.NotNull;
 import java.net.URI;
+import javax.validation.constraints.NotNull;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonTypeName("ids:RejectionReason")
@@ -33,9 +33,6 @@ public class RejectionReason {
 
     public static final RejectionReason MESSAGE_TYPE_NOT_SUPPORTED =
             new RejectionReason(URI.create("https://w3id.org/idsa/code/MESSAGE_TYPE_NOT_SUPPORTED"));
-
-    public static final RejectionReason METHOD_NOT_SUPPORTED =
-            new RejectionReason(URI.create("https://w3id.org/idsa/code/METHOD_NOT_SUPPORTED"));
 
     public static final RejectionReason NOT_AUTHENTICATED =
             new RejectionReason(URI.create("https://w3id.org/idsa/code/NOT_AUTHENTICATED"));

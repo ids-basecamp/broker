@@ -14,7 +14,6 @@
 
 package de.truzzt.edc.extension.catalog.directory.sql;
 
-import de.truzzt.edc.extension.catalog.directory.sql.schema.BaseSqlDialectStatements;
 import de.truzzt.edc.extension.catalog.directory.sql.schema.postgres.PostgresDialectStatements;
 import de.truzzt.edc.extension.catalog.directory.test.TestUtil;
 import de.truzzt.edc.extension.postgresql.migration.DatabaseMigrationManager;
