@@ -24,17 +24,17 @@ public class ConnectorUpdateHandler implements Handler {
     private final IdsId connectorId;
     private final TypeManagerUtil typeManagerUtil;
 
-    private final FederatedCacheNodeDirectory cacheNodeDirectory;
+    private final FederatedCacheNodeDirectory nodeDirectory;
 
     public ConnectorUpdateHandler(
             @NotNull Monitor monitor,
             @NotNull IdsId connectorId,
             @NotNull TypeManagerUtil typeManagerUtil,
-            @NotNull FederatedCacheNodeDirectory cacheNodeDirectory) {
+            @NotNull FederatedCacheNodeDirectory nodeDirectory) {
         this.monitor = monitor;
         this.connectorId = connectorId;
         this.typeManagerUtil = typeManagerUtil;
-        this.cacheNodeDirectory = cacheNodeDirectory;
+        this.nodeDirectory = nodeDirectory;
     }
 
     @Override
@@ -61,7 +61,7 @@ public class ConnectorUpdateHandler implements Handler {
                     header.getIssuerConnector().toString(),
                     List.of(MessageProtocol.IDS_MULTIPART)
             );
-            cacheNodeDirectory.insert(cacheNode);
+            nodeDirectory.insert(cacheNode);
         } catch (Exception e) {
             monitor.severe("ConnectorUpdateHandler: Error inserting new Federated Cache Node", e);
             return createMultipartResponse(internalRecipientError(header, connectorId));
