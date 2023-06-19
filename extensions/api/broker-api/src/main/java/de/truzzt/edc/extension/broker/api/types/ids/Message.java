@@ -16,7 +16,7 @@ public class Message {
 
     @JsonProperty("@context")
     @NotNull
-    private String context;
+    private Context context;
 
     @JsonProperty("@id")
     @NotNull
@@ -168,11 +168,11 @@ public class Message {
         this.contentVersion = contentVersion;
     }
 
-    public String getContext() {
+    public Context getContext() {
         return context;
     }
 
-    public void setContext(String context) {
+    public void setContext(Context context) {
         this.context = context;
     }
 }
