@@ -1,7 +1,6 @@
 package de.truzzt.edc.extension.broker.api.types;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.truzzt.edc.extension.broker.api.types.ids.DynamicAttributeToken;
 import de.truzzt.edc.extension.broker.api.types.ids.Message;
@@ -21,17 +20,15 @@ public class TypeManagerUtil {
         this.mapper = JsonLd.getObjectMapper();
     }
 
-    public Message parseMessage(InputStream streamToken)  {
-        try{
-            JsonNode jsonMap = mapper.readTree(streamToken);
-            return mapper.readValue(jsonMap.toString(), Message.class);
+    public Message parseMessage(InputStream streamToken) {
+        try {
+            return mapper.readValue(streamToken, Message.class);
         } catch (IOException e) {
             throw new EdcException("Error parsing Header to Message", e);
         }
     }
 
-    public JWTPayload parseToken(DynamicAttributeToken token){
-
+    public JWTPayload parseToken(DynamicAttributeToken token) {
         try {
             Base64.Decoder decoder = Base64.getUrlDecoder();
             String[] chunks = token.getTokenValue().split("\\.");

@@ -14,7 +14,6 @@
 
 package de.truzzt.edc.extension.catalog.directory.sql;
 
-import de.truzzt.edc.extension.catalog.directory.sql.schema.BaseSqlDialectStatements;
 import de.truzzt.edc.extension.catalog.directory.sql.schema.postgres.PostgresDialectStatements;
 import de.truzzt.edc.extension.catalog.directory.test.TestUtil;
 import de.truzzt.edc.extension.postgresql.migration.DatabaseMigrationManager;
@@ -41,8 +40,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 @ExtendWith(PostgresqlStoreSetupExtension.class)
 class PostgresFederatedNodeDirectoryTest {
 
-    private final BaseSqlDialectStatements sqlStatements = new PostgresDialectStatements();
-
     private SqlFederatedNodeDirectory federatedNodeDirectory;
 
     private DatabaseMigrationManager migrationManager;
@@ -55,8 +52,9 @@ class PostgresFederatedNodeDirectoryTest {
         migrationManager = TestUtil.setupFlyway();
         migrationManager.migrateAllDataSources(false);
 
-        federatedNodeDirectory = new SqlFederatedNodeDirectory(setupExtension.getDataSourceRegistry(), setupExtension.getDatasourceName(),
-                setupExtension.getTransactionContext(), typeManager.getMapper(), sqlStatements);
+        federatedNodeDirectory = new SqlFederatedNodeDirectory(setupExtension.getDataSourceRegistry(),
+                setupExtension.getDatasourceName(), setupExtension.getTransactionContext(), typeManager.getMapper(),
+                new PostgresDialectStatements());
     }
 
     @AfterEach

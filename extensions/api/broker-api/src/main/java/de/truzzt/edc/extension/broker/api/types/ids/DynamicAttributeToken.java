@@ -1,10 +1,14 @@
 package de.truzzt.edc.extension.broker.api.types.ids;
 
-import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.annotation.JsonAlias;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import de.truzzt.edc.extension.broker.api.types.ids.util.VocabUtil;
 
-import javax.validation.constraints.NotNull;
 import java.net.URI;
+import javax.validation.constraints.NotNull;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "@type")
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -41,16 +45,16 @@ public class DynamicAttributeToken {
         return tokenFormat;
     }
 
-    public void setTokenFormat(TokenFormat _tokenFormat) {
-        this.tokenFormat = _tokenFormat;
+    public void setTokenFormat(TokenFormat tokenFormat) {
+        this.tokenFormat = tokenFormat;
     }
 
     public String getTokenValue() {
         return tokenValue;
     }
 
-    public void setTokenValue(String _tokenValue) {
-        this.tokenValue = _tokenValue;
+    public void setTokenValue(String tokenValue) {
+        this.tokenValue = tokenValue;
     }
 }
 
