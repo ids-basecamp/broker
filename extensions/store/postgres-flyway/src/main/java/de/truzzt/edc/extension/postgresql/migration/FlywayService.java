@@ -22,6 +22,7 @@ import org.eclipse.edc.sql.datasource.ConnectionFactoryDataSource;
 import org.flywaydb.core.Flyway;
 import org.flywaydb.core.api.FlywayException;
 import org.flywaydb.core.api.MigrationVersion;
+import org.flywaydb.core.api.output.CleanResult;
 import org.flywaydb.core.api.output.MigrateResult;
 import org.flywaydb.core.api.output.RepairResult;
 
@@ -44,9 +45,10 @@ public class FlywayService {
     public void migrateDatabase(
             String datasourceName,
             JdbcConnectionProperties jdbcConnectionProperties,
-            List<String> additionalMigrationLocations
+            List<String> additionalMigrationLocations,
+            Boolean cleanDisabled
     ) {
-        var flyway = setupFlyway(datasourceName, jdbcConnectionProperties, additionalMigrationLocations);
+        var flyway = setupFlyway(datasourceName, jdbcConnectionProperties, additionalMigrationLocations, cleanDisabled);
         try {
             var migrateResult = flyway.migrate();
             handleFlywayMigrationResult(datasourceName, migrateResult);
@@ -56,6 +58,21 @@ public class FlywayService {
             } else {
                 throw new EdcPersistenceException("Flyway migration failed", e);
             }
+        }
+    }
+
+    public void cleanDatabase(
+            String datasourceName,
+            JdbcConnectionProperties jdbcConnectionProperties,
+            List<String> additionalMigrationLocations,
+            Boolean cleanDisabled
+    ) {
+        var flyway = setupFlyway(datasourceName, jdbcConnectionProperties, additionalMigrationLocations, cleanDisabled);
+        try {
+            var cleanResult = flyway.clean();
+            handleFlywayCleanResult(datasourceName, cleanResult);
+        } catch (FlywayException e) {
+            throw new EdcPersistenceException("Flyway clean failed", e);
         }
     }
 
@@ -91,7 +108,8 @@ public class FlywayService {
     private Flyway setupFlyway(
             String datasourceName,
             JdbcConnectionProperties jdbcConnectionProperties,
-            List<String> additionalMigrationLocations
+            List<String> additionalMigrationLocations,
+            Boolean cleanDisabled
     ) {
         var dataSource = getDataSource(jdbcConnectionProperties);
         var migrationTableName = String.format("flyway_schema_history_%s", datasourceName);
@@ -108,6 +126,7 @@ public class FlywayService {
                 .dataSource(dataSource)
                 .table(migrationTableName)
                 .locations(migrationLocations.toArray(new String[0]))
+                .cleanDisabled(cleanDisabled)
                 .load();
     }
 
@@ -132,5 +151,16 @@ public class FlywayService {
         }
     }
 
+    private void handleFlywayCleanResult(String datasourceName, CleanResult cleanResult) {
+        if (cleanResult.schemasCleaned.size() > 0) {
+            monitor.info(String.format(
+                    "Successfully cleaned database for datasource %s",
+                    datasourceName));
+        } else {
+            monitor.info(String.format(
+                    "No clean necessary for datasource %s",
+                    datasourceName));
+        }
+    }
 
 }

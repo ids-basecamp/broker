@@ -21,8 +21,12 @@ plugins {
 dependencies {
     runtimeOnly(project(":core:federated-catalog"))
     runtimeOnly(project(":extensions:api:federated-catalog-api"))
+    runtimeOnly(project(":extensions:api:broker-api"))
+    runtimeOnly(project(":extensions:store:fcc-node-directory-sql"))
+    runtimeOnly(project(":extensions:store:fcc-store-sql"))
     runtimeOnly(project(":extensions:store:postgres-flyway"))
     runtimeOnly(edc.bundles.connector)
+    runtimeOnly(edc.iam.mock)
 }
 
 application {

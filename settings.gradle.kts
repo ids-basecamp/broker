@@ -2,7 +2,10 @@ rootProject.name = "federated-catalog"
 
 include(":core:federated-catalog")
 include(":extensions:store:fcc-node-directory-cosmos")
+include(":extensions:store:fcc-node-directory-sql")
+include(":extensions:store:fcc-store-sql")
 include(":extensions:store:postgres-flyway")
+include(":extensions:api:broker-api")
 include(":extensions:api:federated-catalog-api")
 include(":spi:federated-catalog-spi")
 include(":launchers:in-memory-dev")
@@ -56,6 +59,7 @@ dependencyResolutionManagement {
             library("ext-http", "org.eclipse.edc", "http").versionRef("edc")
             library("spi-ids", "org.eclipse.edc", "ids-spi").versionRef("edc")
             library("ids", "org.eclipse.edc", "ids").versionRef("edc")
+            library("ids-jsonld-serdes", "org.eclipse.edc", "ids-jsonld-serdes").versionRef("edc")
             library("iam-mock", "org.eclipse.edc", "iam-mock").versionRef("edc")
             library("sql-core", "org.eclipse.edc", "sql-core").versionRef("edc")
             library("sql-pool", "org.eclipse.edc", "sql-pool-apache-commons").versionRef("edc")
@@ -85,6 +89,9 @@ dependencyResolutionManagement {
                     "dpf-framework"
                 )
             )
+        }
+        create("ids") {
+            library("infomodel", "de.fraunhofer.iais.eis.ids.infomodel", "java").version("5.0.3")
         }
     }
 }

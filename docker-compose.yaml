@@ -6,8 +6,6 @@ services:
       context: .
       dockerfile: Dockerfile
     image: federated-catalog
-    networks:
-      db:
     depends_on:
       postgres:
         condition: service_healthy
@@ -21,14 +19,12 @@ services:
 
   postgres:
     image: postgres:14-alpine
-    networks:
-      db:
-        aliases:
-          - postgres
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: password
       POSTGRES_DB: broker
+    ports:
+      - "5432:5432"
     volumes:
       - postgres-data:/var/lib/postgresql/data
     healthcheck:
@@ -36,12 +32,6 @@ services:
       timeout: 10s
       retries: 20
       start_period: 0s
-
-
-networks:
-  db:
-    internal: true
-    external: false
 
 volumes:
   postgres-data:
