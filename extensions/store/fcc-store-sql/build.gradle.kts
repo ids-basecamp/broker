@@ -8,7 +8,8 @@
  *  SPDX-License-Identifier: Apache-2.0
  *
  *  Contributors:
- *       Microsoft Corporation - initial API and implementation
+ *       Microsoft Corporation - Initial implementation
+ *       truzzt GmbH - PostgreSQL implementation
  *
  */
 

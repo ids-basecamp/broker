@@ -9,6 +9,7 @@
  *
  *  Contributors:
  *       Microsoft Corporation - Initial implementation
+ *       truzzt GmbH - PostgreSQL implementation
  *
  */
 
@@ -33,9 +34,6 @@ import java.util.stream.Collectors;
 
 import static org.eclipse.edc.sql.SqlQueryExecutor.executeQuery;
 
-/**
- * An ephemeral SQL cache node directory.
- */
 public class SqlFederatedNodeDirectory extends AbstractSqlStore implements FederatedCacheNodeDirectory {
 
     private final FederatedCacheNodeStatements statements;
