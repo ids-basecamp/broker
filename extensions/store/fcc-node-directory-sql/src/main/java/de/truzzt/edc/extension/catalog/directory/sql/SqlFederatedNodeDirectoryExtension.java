@@ -22,22 +22,18 @@ import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.runtime.metamodel.annotation.Provider;
 import org.eclipse.edc.runtime.metamodel.annotation.Requires;
 import org.eclipse.edc.spi.system.ServiceExtension;
-import org.eclipse.edc.spi.types.TypeManager;
+import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.transaction.datasource.spi.DataSourceRegistry;
 import org.eclipse.edc.transaction.spi.TransactionContext;
 
 @Extension(value = SqlFederatedNodeDirectoryExtension.NAME)
 @Requires(value = {
-        TypeManager.class,
         DataSourceRegistry.class,
         TransactionContext.class
 })
 public class SqlFederatedNodeDirectoryExtension implements ServiceExtension {
 
     public static final String NAME = "SQL Federated Node Directory Extension";
-
-    @Inject
-    private TypeManager typeManager;
     @Inject
     private DataSourceRegistry dataSourceRegistry;
     @Inject
@@ -49,12 +45,14 @@ public class SqlFederatedNodeDirectoryExtension implements ServiceExtension {
     }
 
     @Provider
-    public FederatedCacheNodeDirectory sqlNodeDirectory() {
+    public FederatedCacheNodeDirectory sqlNodeDirectory(ServiceExtensionContext context) {
+
+
         return new SqlFederatedNodeDirectory(
                 dataSourceRegistry,
                 DataSourceRegistry.DEFAULT_DATASOURCE,
                 transactionContext,
-                typeManager.getMapper(),
+                context.getTypeManager().getMapper(),
                 new PostgresDialectStatements()
         );
     }
