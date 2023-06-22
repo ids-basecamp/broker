@@ -8,7 +8,8 @@
  *  SPDX-License-Identifier: Apache-2.0
  *
  *  Contributors:
- *       sovity GmbH - initial implementation
+ *       sovity GmbH - Initial implementation
+*        truzzt GmbH - PostgreSQL implementation
  *
  */
 

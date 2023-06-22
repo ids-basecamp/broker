@@ -8,7 +8,8 @@
  *  SPDX-License-Identifier: Apache-2.0
  *
  *  Contributors:
- *       Microsoft Corporation - initial API and implementation
+ *       Microsoft Corporation - Initial implementation
+ *        truzzt GmbH - PostgreSQL implementation
  *
  */
 
@@ -19,14 +20,15 @@ plugins {
 }
 
 dependencies {
+    runtimeOnly(edc.bundles.connector)
+    runtimeOnly(edc.iam.mock)
+
     runtimeOnly(project(":core:federated-catalog"))
     runtimeOnly(project(":extensions:api:federated-catalog-api"))
     runtimeOnly(project(":extensions:api:broker-api"))
-    runtimeOnly(project(":extensions:store:fcc-node-directory-sql"))
-    runtimeOnly(project(":extensions:store:fcc-store-sql"))
-    runtimeOnly(project(":extensions:store:postgres-flyway"))
-    runtimeOnly(edc.bundles.connector)
-    runtimeOnly(edc.iam.mock)
+    //runtimeOnly(project(":extensions:store:fcc-node-directory-sql"))
+    //runtimeOnly(project(":extensions:store:fcc-store-sql"))
+    //runtimeOnly(project(":extensions:store:postgres-flyway"))
 }
 
 application {

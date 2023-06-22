@@ -9,6 +9,7 @@
  *
  *  Contributors:
  *       Microsoft Corporation - Initial implementation
+ *       truzzt GmbH - PostgreSQL implementation
  *
  */
 
@@ -41,9 +42,6 @@ import java.util.stream.Collectors;
 
 import static org.eclipse.edc.sql.SqlQueryExecutor.executeQuery;
 
-/**
- * An ephemeral SQL cache store.
- */
 public class SqlFederatedCacheStore extends AbstractSqlStore implements FederatedCacheStore {
 
     private final ContractOfferStatements statements;

@@ -30,6 +30,7 @@ hs_err_pid*
 /**/bin
 
 .idea
+.run
 .vs
 .vscode
 

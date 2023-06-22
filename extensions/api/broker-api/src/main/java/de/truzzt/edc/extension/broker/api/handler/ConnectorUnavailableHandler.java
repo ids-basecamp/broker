@@ -1,9 +1,24 @@
+/*
+ *  Copyright (c) 2021 Microsoft Corporation
+ *
+ *  This program and the accompanying materials are made available under the
+ *  terms of the Apache License, Version 2.0 which is available at
+ *  https://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  SPDX-License-Identifier: Apache-2.0
+ *
+ *  Contributors:
+ *       Microsoft Corporation - Initial implementation
+ *       truzzt GmbH - PostgreSQL implementation
+ *
+ */
+
 package de.truzzt.edc.extension.broker.api.handler;
 
 import de.truzzt.edc.extension.broker.api.message.MultipartRequest;
 import de.truzzt.edc.extension.broker.api.message.MultipartResponse;
 import de.truzzt.edc.extension.broker.api.types.TypeManagerUtil;
-import de.truzzt.edc.extension.broker.api.types.jwt.JWTPayload;
+import de.truzzt.edc.extension.broker.api.types.jwt.JwtPayload;
 import org.eclipse.edc.catalog.spi.FederatedCacheNode;
 import org.eclipse.edc.catalog.spi.directory.FederatedCacheNodeDirectory;
 import org.eclipse.edc.protocol.ids.spi.types.IdsId;
@@ -44,7 +59,7 @@ public class ConnectorUnavailableHandler implements Handler {
 
         var header = multipartRequest.getHeader();
 
-        JWTPayload jwt;
+        JwtPayload jwt;
         try {
             jwt = typeManagerUtil.parseToken(header.getSecurityToken());
         } catch (EdcException e) {
