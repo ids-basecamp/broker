@@ -36,7 +36,9 @@ import static org.eclipse.edc.protocol.ids.util.ConnectorIdUtil.resolveConnector
 
 @Extension(value = BrokerApiExtension.NAME)
 @Requires(value = {
-        org.eclipse.edc.catalog.spi.directory.FederatedCacheNodeDirectory.class
+        WebService.class,
+        ManagementApiConfiguration.class,
+        FederatedCacheNodeDirectory.class
 })
 public class BrokerApiExtension implements ServiceExtension {
 

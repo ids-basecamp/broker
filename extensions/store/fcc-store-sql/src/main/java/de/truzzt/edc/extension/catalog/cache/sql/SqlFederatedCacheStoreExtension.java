@@ -17,14 +17,23 @@ package de.truzzt.edc.extension.catalog.cache.sql;
 
 import de.truzzt.edc.extension.catalog.cache.sql.schema.postgres.PostgresDialectStatements;
 import org.eclipse.edc.catalog.spi.FederatedCacheStore;
+import org.eclipse.edc.runtime.metamodel.annotation.Extension;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.runtime.metamodel.annotation.Provider;
+import org.eclipse.edc.runtime.metamodel.annotation.Requires;
 import org.eclipse.edc.spi.asset.AssetIndex;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.types.TypeManager;
 import org.eclipse.edc.transaction.datasource.spi.DataSourceRegistry;
 import org.eclipse.edc.transaction.spi.TransactionContext;
 
+@Extension(value = SqlFederatedCacheStoreExtension.NAME)
+@Requires(value = {
+        DataSourceRegistry.class,
+        TransactionContext.class,
+        TypeManager.class,
+        AssetIndex.class
+})
 public class SqlFederatedCacheStoreExtension implements ServiceExtension {
 
     public static final String NAME = "SQL Federated Cache Store Extension";
