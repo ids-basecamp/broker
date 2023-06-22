@@ -61,11 +61,13 @@ dependencyResolutionManagement {
             library("ids", "org.eclipse.edc", "ids").versionRef("edc")
             library("ids-jsonld-serdes", "org.eclipse.edc", "ids-jsonld-serdes").versionRef("edc")
             library("iam-mock", "org.eclipse.edc", "iam-mock").versionRef("edc")
+            library("oauth2-core", "org.eclipse.edc", "oauth2-core").versionRef("edc")
             library("sql-core", "org.eclipse.edc", "sql-core").versionRef("edc")
             library("sql-pool", "org.eclipse.edc", "sql-pool-apache-commons").versionRef("edc")
             library("transaction-local", "org.eclipse.edc", "transaction-local").versionRef("edc")
             library("ext-azure-cosmos-core", "org.eclipse.edc", "azure-cosmos-core").versionRef("edc")
             library("ext-azure-test", "org.eclipse.edc", "azure-test").versionRef("edc")
+            library("vault-filesystem", "org.eclipse.edc", "vault-filesystem").versionRef("edc")
 
             // DPF modules
             library("dpf-transferclient", "org.eclipse.edc", "data-plane-client").versionRef("edc")
@@ -89,9 +91,6 @@ dependencyResolutionManagement {
                     "dpf-framework"
                 )
             )
-        }
-        create("ids") {
-            library("infomodel", "de.fraunhofer.iais.eis.ids.infomodel", "java").version("5.0.3")
         }
     }
 }

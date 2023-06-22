@@ -1,5 +1,6 @@
 package de.truzzt.edc.extension.broker.api.types;
 
+import org.eclipse.edc.protocol.ids.jsonld.JsonLd;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -71,7 +72,7 @@ public class TypeManagerUtilTest {
 
     @BeforeEach
     void setUp() {
-        typeManagerUtil = new TypeManagerUtil();
+        typeManagerUtil = new TypeManagerUtil(JsonLd.getObjectMapper());
     }
 
     @Test

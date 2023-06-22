@@ -20,7 +20,11 @@ plugins {
 
 dependencies {
     runtimeOnly(project(":core:federated-catalog"))
+    runtimeOnly(project(":extensions:api:broker-api"))
     runtimeOnly(project(":extensions:api:federated-catalog-api"))
+
+    runtimeOnly(edc.oauth2.core)
+    runtimeOnly(edc.vault.filesystem)
     runtimeOnly(edc.bundles.connector)
 }
 

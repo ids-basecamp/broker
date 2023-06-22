@@ -5,7 +5,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import de.truzzt.edc.extension.broker.api.types.ids.DynamicAttributeToken;
 import de.truzzt.edc.extension.broker.api.types.ids.Message;
 import de.truzzt.edc.extension.broker.api.types.jwt.JWTPayload;
-import org.eclipse.edc.protocol.ids.jsonld.JsonLd;
+//import org.eclipse.edc.protocol.ids.jsonld.JsonLd;
+import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.spi.EdcException;
 
 import java.io.IOException;
@@ -16,8 +17,8 @@ public class TypeManagerUtil {
 
     private final ObjectMapper mapper;
 
-    public TypeManagerUtil() {
-        this.mapper = JsonLd.getObjectMapper();
+    public TypeManagerUtil(ObjectMapper mapper) {
+        this.mapper = mapper;
     }
 
     public Message parseMessage(InputStream streamToken) {

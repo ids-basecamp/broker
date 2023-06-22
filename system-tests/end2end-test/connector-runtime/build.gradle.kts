@@ -28,7 +28,6 @@ dependencies {
 
     // IDS
     runtimeOnly(edc.ids)
-    runtimeOnly(ids.infomodel)
     runtimeOnly(edc.iam.mock)
 
     // Embedded DPF

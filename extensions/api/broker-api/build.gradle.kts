@@ -24,7 +24,6 @@ dependencies {
     runtimeOnly(edc.core.connector)
 
     implementation(edc.ids)
-    implementation(ids.infomodel)
     implementation(edc.ids.jsonld.serdes)
     implementation(libs.jakarta.rsApi)
     implementation(libs.jersey.multipart)

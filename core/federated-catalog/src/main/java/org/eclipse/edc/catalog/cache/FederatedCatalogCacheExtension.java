@@ -19,7 +19,7 @@ import org.eclipse.edc.catalog.cache.query.IdsMultipartNodeQueryAdapter;
 import org.eclipse.edc.catalog.spi.CacheConfiguration;
 import org.eclipse.edc.catalog.spi.CachedAsset;
 import org.eclipse.edc.catalog.spi.Catalog;
-import org.eclipse.edc.catalog.spi.FederatedCacheNodeDirectory;
+import org.eclipse.edc.catalog.spi.directory.FederatedCacheNodeDirectory;
 import org.eclipse.edc.catalog.spi.FederatedCacheNodeFilter;
 import org.eclipse.edc.catalog.spi.FederatedCacheStore;
 import org.eclipse.edc.catalog.spi.NodeQueryAdapterRegistry;
