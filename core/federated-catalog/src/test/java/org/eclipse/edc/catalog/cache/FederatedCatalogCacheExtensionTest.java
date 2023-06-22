@@ -16,9 +16,9 @@ package org.eclipse.edc.catalog.cache;
 
 import org.awaitility.Awaitility;
 import org.eclipse.edc.catalog.cache.query.IdsMultipartNodeQueryAdapter;
-import org.eclipse.edc.catalog.spi.directory.FederatedCacheNodeDirectory;
 import org.eclipse.edc.catalog.spi.FederatedCacheStore;
 import org.eclipse.edc.catalog.spi.NodeQueryAdapter;
+import org.eclipse.edc.catalog.spi.directory.FederatedCacheNodeDirectory;
 import org.eclipse.edc.catalog.spi.model.UpdateResponse;
 import org.eclipse.edc.junit.extensions.DependencyInjectionExtension;
 import org.eclipse.edc.spi.message.RemoteMessageDispatcherRegistry;
