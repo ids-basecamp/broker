@@ -65,10 +65,10 @@ public class TypeManagerUtilTest {
         stb.append(" },");
         stb.append("\"@type\" : \"ids:ConnectorUpdateMessage\",");
         stb.append("\"@id\" : \"https://w3id.org/idsa/autogen/connectorUpdateMessage/6d875403-cfea-4aad-979c-3515c2e71967\",");
-        stb.append("\"ids:securityToken\" : { ");
-        stb.append("\"@type\" : \"ids:DynamicAttributeToken\",");
-        stb.append("\"@id\" : \"https://w3id.org/idsa/autogen/dynamicAttributeToken/7bbbd2c1-2d75-4e3d-bd10-c52d0381cab0\",");
-        if(withToken) {
+        if (withToken) {
+            stb.append("\"ids:securityToken\" : { ");
+            stb.append("\"@type\" : \"ids:DynamicAttributeToken\",");
+            stb.append("\"@id\" : \"https://w3id.org/idsa/autogen/dynamicAttributeToken/7bbbd2c1-2d75-4e3d-bd10-c52d0381cab0\",");
             stb.append("\"ids:tokenValue\" : ");
             stb.append("\"eyJ0eXAiOiJKV1QiLCJraWQiOiJkZWZhdWx0IiwiYWxnIjoiUlMyNTYifQ.eyJzY29wZXMiOlsia");
             stb.append("WRzYzpJRFNfQ09OTkVDVE9SX0FUVFJJQlVURVNfQUxMIl0sImF1ZCI6Imlkc2M6SURTX0NPTk5FQ1RPUlNfQUxMIiwiaXNz");
