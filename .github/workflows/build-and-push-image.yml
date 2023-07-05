@@ -8,8 +8,7 @@ jobs:
   increment-image-version:
     runs-on: ubuntu-latest
     permissions:
-      contents: read
-      packages: write
+      contents: write
 
     steps:
       - name: Checkout Code
@@ -24,6 +23,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   build-and-push-image:
+    needs: increment-image-version
     runs-on: ubuntu-latest
     permissions:
       contents: read
