@@ -48,6 +48,7 @@ public class BaseSqlDialectStatements implements ContractOfferStatements {
                 getIdColumn());
     }
 
+    @Override
     public String getUpdateOfferEndTemplate() {
         return format("UPDATE %s SET %s = ? WHERE %s IS NULL",
                 getContractOfferTable(),
@@ -55,6 +56,7 @@ public class BaseSqlDialectStatements implements ContractOfferStatements {
                 getOfferEndColumn());
     }
 
+    @Override
     public String getDeleteExpiredTemplate() {
         return format("DELETE FROM %s WHERE %s < ?",
                 getContractOfferTable(),
