@@ -8,7 +8,8 @@
  *  SPDX-License-Identifier: Apache-2.0
  *
  *  Contributors:
- *       sovity GmbH - initial implementation
+ *       sovity GmbH - Initial implementation
+*        truzzt GmbH - PostgreSQL implementation
  *
  */
 
@@ -21,7 +22,6 @@ import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 
 public class PostgresFlywayExtension implements ServiceExtension {
-
 
     @Setting
     public static final String EDC_DATASOURCE_REPAIR_SETTING = "edc.flyway.repair";
@@ -36,7 +36,7 @@ public class PostgresFlywayExtension implements ServiceExtension {
         var tryRepairOnFailedMigration = context.getSetting(EDC_DATASOURCE_REPAIR_SETTING, false);
         var flywayService = new FlywayService(context.getMonitor(), tryRepairOnFailedMigration);
         var migrationManager = new DatabaseMigrationManager(context.getConfig(), flywayService);
-        migrationManager.migrateAllDataSources();
+        migrationManager.migrateAllDataSources(true);
     }
 
 }

@@ -8,7 +8,8 @@
  *  SPDX-License-Identifier: Apache-2.0
  *
  *  Contributors:
- *       sovity GmbH - initial implementation
+ *       sovity GmbH - Initial implementation
+ *       truzzt GmbH - PostgreSQL implementation
  *
  */
 
@@ -35,11 +36,19 @@ public class DatabaseMigrationManager {
         this.flywayService = flywayService;
     }
 
-    public void migrateAllDataSources() {
+    public void migrateAllDataSources(Boolean cleanDisabled) {
         for (String datasourceName : getDataSourceNames(config)) {
             var jdbcConnectionProperties = new JdbcConnectionProperties(config, datasourceName);
             List<String> additionalMigrationLocations = getAdditionalFlywayMigrationLocations(datasourceName);
-            flywayService.migrateDatabase(datasourceName, jdbcConnectionProperties, additionalMigrationLocations);
+            flywayService.migrateDatabase(datasourceName, jdbcConnectionProperties, additionalMigrationLocations, cleanDisabled);
+        }
+    }
+
+    public void cleanAllDataSources(Boolean cleanDisabled) {
+        for (String datasourceName : getDataSourceNames(config)) {
+            var jdbcConnectionProperties = new JdbcConnectionProperties(config, datasourceName);
+            List<String> additionalMigrationLocations = getAdditionalFlywayMigrationLocations(datasourceName);
+            flywayService.cleanDatabase(datasourceName, jdbcConnectionProperties, additionalMigrationLocations, cleanDisabled);
         }
     }
 
