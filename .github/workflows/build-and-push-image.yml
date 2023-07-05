@@ -2,7 +2,7 @@ name: Build and Publish Image
 
 on:
   push:
-    branches: ['main']
+    branches: ['develop']
 
 jobs:
   increment-image-version:
