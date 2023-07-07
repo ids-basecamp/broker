@@ -2,7 +2,6 @@ name: Build and Publish Image
 
 on:
   push:
-    branches: ['develop']
     tags:
       - 'image-v[0-9]+.[0-9]+.[0-9]+'
 
