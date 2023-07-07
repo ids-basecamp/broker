@@ -7,7 +7,6 @@ on:
 
 jobs:
   build-and-push-image:
-    needs: increment-image-version
     runs-on: ubuntu-latest
     permissions:
       contents: read
