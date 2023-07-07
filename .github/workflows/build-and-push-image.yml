@@ -42,7 +42,7 @@ jobs:
           images: ghcr.io/truzzt/federated-catalog
           tags: |
             type=raw,value=latest
-            ${{ github.ref }}
+            ${{ github.ref.name }}
 
       - name: Build and Push Image
         uses: docker/build-push-action@v4
