@@ -21,7 +21,6 @@ import org.eclipse.edc.runtime.metamodel.annotation.Extension;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.runtime.metamodel.annotation.Provider;
 import org.eclipse.edc.runtime.metamodel.annotation.Requires;
-import org.eclipse.edc.spi.asset.AssetIndex;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.transaction.datasource.spi.DataSourceRegistry;
@@ -30,8 +29,7 @@ import org.eclipse.edc.transaction.spi.TransactionContext;
 @Extension(value = SqlFederatedCacheStoreExtension.NAME)
 @Requires(value = {
         DataSourceRegistry.class,
-        TransactionContext.class,
-        AssetIndex.class
+        TransactionContext.class
 })
 public class SqlFederatedCacheStoreExtension implements ServiceExtension {
 
@@ -41,8 +39,6 @@ public class SqlFederatedCacheStoreExtension implements ServiceExtension {
     private DataSourceRegistry dataSourceRegistry;
     @Inject
     private TransactionContext transactionContext;
-    @Inject
-    private AssetIndex assetIndex;
 
     @Override
     public String name() {
@@ -56,8 +52,7 @@ public class SqlFederatedCacheStoreExtension implements ServiceExtension {
                 DataSourceRegistry.DEFAULT_DATASOURCE,
                 transactionContext,
                 context.getTypeManager().getMapper(),
-                new PostgresDialectStatements(),
-                assetIndex
+                new PostgresDialectStatements()
         );
     }
 }
