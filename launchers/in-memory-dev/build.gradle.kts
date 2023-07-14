@@ -34,5 +34,5 @@ application {
 
 tasks.withType<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar> {
     mergeServiceFiles()
-    archiveFileName.set("fc-in-memory.jar")
+    archiveFileName.set("fc.jar")
 }

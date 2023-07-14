@@ -15,6 +15,7 @@
 plugins {
     `java-library`
     id("application")
+    id("com.github.johnrengelman.shadow") version "7.1.2"
 }
 
 dependencies {
@@ -28,4 +29,9 @@ dependencies {
 
 application {
     mainClass.set("org.eclipse.edc.boot.system.runtime.BaseRuntime")
+}
+
+tasks.withType<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar> {
+    mergeServiceFiles()
+    archiveFileName.set("fc.jar")
 }
