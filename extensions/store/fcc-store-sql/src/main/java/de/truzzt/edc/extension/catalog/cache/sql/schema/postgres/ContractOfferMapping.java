@@ -22,7 +22,7 @@ public class ContractOfferMapping extends TranslationMapping {
     public ContractOfferMapping(ContractOfferStatements statements) {
         add("id", statements.getIdColumn());
         add("policy", statements.getPolicyColumn());
-        add("asset", statements.getAssetIdColumn());
+        add("asset", statements.getAssetColumn());
         add("uriProvider", statements.getUriProviderColumn());
         add("uriConsumer", statements.getUriConsumerColumn());
         add("offerStart", statements.getOfferStartColumn());

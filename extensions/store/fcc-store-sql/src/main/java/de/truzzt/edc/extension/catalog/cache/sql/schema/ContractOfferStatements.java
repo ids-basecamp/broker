@@ -33,8 +33,8 @@ public interface ContractOfferStatements {
         return "policy";
     }
 
-    default String getAssetIdColumn() {
-        return "asset_id";
+    default String getAssetColumn() {
+        return "asset";
     }
 
     default String getUriProviderColumn() {

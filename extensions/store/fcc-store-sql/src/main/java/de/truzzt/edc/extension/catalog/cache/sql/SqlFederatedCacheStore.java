@@ -20,10 +20,10 @@ import de.truzzt.edc.extension.catalog.cache.sql.schema.ContractOfferStatements;
 import org.eclipse.edc.catalog.spi.FederatedCacheStore;
 import org.eclipse.edc.connector.contract.spi.types.offer.ContractOffer;
 import org.eclipse.edc.policy.model.Policy;
-import org.eclipse.edc.spi.asset.AssetIndex;
 import org.eclipse.edc.spi.persistence.EdcPersistenceException;
 import org.eclipse.edc.spi.query.Criterion;
 import org.eclipse.edc.spi.query.QuerySpec;
+import org.eclipse.edc.spi.types.domain.asset.Asset;
 import org.eclipse.edc.sql.store.AbstractSqlStore;
 import org.eclipse.edc.transaction.datasource.spi.DataSourceRegistry;
 import org.eclipse.edc.transaction.spi.TransactionContext;
@@ -46,19 +46,15 @@ public class SqlFederatedCacheStore extends AbstractSqlStore implements Federate
 
     private final ContractOfferStatements statements;
 
-    private final AssetIndex assetIndex;
-
     private final String contractOfferExistsMessage = "Contract Offer with ID %s already exists";
 
     public SqlFederatedCacheStore(DataSourceRegistry dataSourceRegistry,
                                   String dataSourceName,
                                   TransactionContext transactionContext,
                                   ObjectMapper objectMapper,
-                                  ContractOfferStatements statements,
-                                  AssetIndex assetIndex) {
+                                  ContractOfferStatements statements) {
         super(dataSourceRegistry, dataSourceName, transactionContext, objectMapper);
         this.statements = statements;
-        this.assetIndex = assetIndex;
     }
 
     @Override
@@ -80,7 +76,7 @@ public class SqlFederatedCacheStore extends AbstractSqlStore implements Federate
                 executeQuery(connection, statements.getInsertTemplate(),
                         contractOffer.getId(),
                         toJson(contractOffer.getPolicy()),
-                        contractOffer.getAsset().getId(),
+                        toJson(contractOffer.getAsset()),
                         contractOffer.getProvider() != null ? contractOffer.getProvider().toString() : null,
                         contractOffer.getConsumer() != null ? contractOffer.getConsumer().toString() : null,
                         mapFromZonedDateTime(contractOffer.getOfferStart()),
@@ -156,10 +152,11 @@ public class SqlFederatedCacheStore extends AbstractSqlStore implements Federate
             throw new EdcPersistenceException("Error parsing Policy JSON column", e);
         }
 
-        var assetId = resultSet.getString(statements.getAssetIdColumn());
-        var asset = assetIndex.findById(assetId);
-        if (asset == null) {
-            throw new IllegalStateException("Asset not found with ID: " + assetId);
+        Asset asset;
+        try {
+            asset = fromJson(resultSet.getString(statements.getAssetColumn()), Asset.class);
+        } catch (EdcPersistenceException e) {
+            throw new EdcPersistenceException("Error parsing Asset JSON column", e);
         }
 
         return ContractOffer.Builder.newInstance()

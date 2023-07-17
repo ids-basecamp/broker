@@ -25,17 +25,18 @@ public class BaseSqlDialectStatements implements ContractOfferStatements {
 
     @Override
     public String getInsertTemplate() {
-        return format("INSERT INTO %s (%s, %s, %s, %s, %s, %s, %s, %s, %s) VALUES (?, ?%s, ?, ?, ?, ?, ?, ?, ?)",
+        return format("INSERT INTO %s (%s, %s, %s, %s, %s, %s, %s, %s, %s) VALUES (?, ?%s, ?%s, ?, ?, ?, ?, ?, ?)",
                 getContractOfferTable(),
                 getIdColumn(),
                 getPolicyColumn(),
-                getAssetIdColumn(),
+                getAssetColumn(),
                 getUriProviderColumn(),
                 getUriConsumerColumn(),
                 getOfferStartColumn(),
                 getOfferEndColumn(),
                 getContractStartColumn(),
                 getContractEndColumn(),
+                getFormatAsJsonOperator(),
                 getFormatAsJsonOperator()
         );
     }

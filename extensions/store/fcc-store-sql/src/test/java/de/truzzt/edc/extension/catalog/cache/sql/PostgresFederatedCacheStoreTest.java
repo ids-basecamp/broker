@@ -19,14 +19,11 @@ import de.truzzt.edc.extension.catalog.cache.sql.schema.postgres.PostgresDialect
 import de.truzzt.edc.extension.catalog.cache.test.TestUtil;
 import de.truzzt.edc.extension.postgresql.migration.DatabaseMigrationManager;
 import org.eclipse.edc.connector.contract.spi.types.offer.ContractOffer;
-import org.eclipse.edc.connector.defaults.storage.assetindex.InMemoryAssetIndex;
 import org.eclipse.edc.junit.annotations.PostgresqlDbIntegrationTest;
 import org.eclipse.edc.policy.model.PolicyRegistrationTypes;
-import org.eclipse.edc.spi.asset.AssetIndex;
 import org.eclipse.edc.spi.persistence.EdcPersistenceException;
 import org.eclipse.edc.spi.query.Criterion;
 import org.eclipse.edc.spi.types.TypeManager;
-import org.eclipse.edc.spi.types.domain.asset.AssetEntry;
 import org.eclipse.edc.sql.testfixtures.PostgresqlStoreSetupExtension;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -48,8 +45,6 @@ class PostgresFederatedCacheStoreTest {
 
     private final BaseSqlDialectStatements sqlStatements = new PostgresDialectStatements();
 
-    private final AssetIndex assetIndex = new InMemoryAssetIndex();
-
     private SqlFederatedCacheStore federatedCacheStore;
 
     private DatabaseMigrationManager migrationManager;
@@ -63,7 +58,7 @@ class PostgresFederatedCacheStoreTest {
         migrationManager.migrateAllDataSources(false);
 
         federatedCacheStore = new SqlFederatedCacheStore(setupExtension.getDataSourceRegistry(), setupExtension.getDatasourceName(),
-                setupExtension.getTransactionContext(), typeManager.getMapper(), sqlStatements, assetIndex);
+                setupExtension.getTransactionContext(), typeManager.getMapper(), sqlStatements);
     }
 
     @AfterEach
@@ -179,7 +174,6 @@ class PostgresFederatedCacheStoreTest {
 
         var dataAddress = TestUtil.createDataAddress("test-address" + i);
         var asset = TestUtil.createAsset("test-asset" + i);
-        assetIndex.accept(new AssetEntry(asset, dataAddress));
 
         return TestUtil.createOffer("test-offer" + i, asset);
     }
