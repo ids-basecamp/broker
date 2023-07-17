@@ -55,7 +55,8 @@ public class SqlFederatedNodeDirectory extends AbstractSqlStore implements Feder
 
         return transactionContext.execute(() -> {
             try {
-                var statement = statements.createQuery(QuerySpec.Builder.newInstance().build());
+                // TODO Implement a definite solution for the query limit. Temporary fix using 5000 as limit.
+                var statement = statements.createQuery(QuerySpec.Builder.newInstance().limit(5000).build());
                 return executeQuery(getConnection(), true, this::mapResultSet, statement.getQueryAsString(), statement.getParameters())
                         .collect(Collectors.toList());
             } catch (SQLException e) {
