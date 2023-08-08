@@ -53,7 +53,12 @@ public class IdsMultipartNodeQueryAdapter implements NodeQueryAdapter {
     private String getNodeUrl(UpdateRequest updateRequest) {
         var url = updateRequest.getNodeUrl();
         if (!url.endsWith("/ids/data")) {
-            url += "/api/v1/ids/data";
+            // prevents double slash
+            if (url.endsWith("/")) {
+                url += "api/v1/ids/data";
+            } else {
+                url += "/api/v1/ids/data";
+            }
         }
 
         return url;
