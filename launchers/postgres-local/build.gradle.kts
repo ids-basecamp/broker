@@ -18,8 +18,6 @@ plugins {
 }
 
 dependencies {
-	implementation(edc.config.filesystem)
-
     runtimeOnly(project(":core:federated-catalog"))
     runtimeOnly(project(":extensions:api:federated-catalog-api"))
     runtimeOnly(project(":extensions:api:broker-api"))

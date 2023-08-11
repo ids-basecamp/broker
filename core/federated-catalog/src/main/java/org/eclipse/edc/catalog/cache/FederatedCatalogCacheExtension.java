@@ -86,7 +86,6 @@ public class FederatedCatalogCacheExtension implements ServiceExtension {
         executionManager = ExecutionManager.Builder.newInstance()
                 .monitor(monitor)
                 .preExecutionTask(() -> {
-                    store.deleteExpired();
                     store.expireAll();
                 })
                 .numCrawlers(numCrawlers)
@@ -94,6 +93,9 @@ public class FederatedCatalogCacheExtension implements ServiceExtension {
                 .onSuccess(this::persist)
                 .nodeDirectory(directory)
                 .nodeFilterFunction(nodeFilter)
+                .postExecutionTask(() -> {
+                    store.deleteExpired();
+                })
                 .build();
     }
 
