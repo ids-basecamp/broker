@@ -15,6 +15,7 @@
 package org.eclipse.edc.catalog.cache.query;
 
 import org.eclipse.edc.catalog.spi.CacheQueryAdapterRegistry;
+import org.eclipse.edc.catalog.spi.QueryConnectorResponse;
 import org.eclipse.edc.catalog.spi.QueryEngine;
 import org.eclipse.edc.catalog.spi.QueryResponse;
 import org.eclipse.edc.catalog.spi.model.FederatedCatalogCacheQuery;
@@ -30,5 +31,10 @@ public class QueryEngineImpl implements QueryEngine {
     @Override
     public QueryResponse getCatalog(FederatedCatalogCacheQuery query) {
         return cacheQueryAdapterRegistry.executeQuery(query);
+    }
+
+    @Override
+    public QueryConnectorResponse getConnectors(FederatedCatalogCacheQuery query) {
+        return cacheQueryAdapterRegistry.executeConnectorQuery(query);
     }
 }

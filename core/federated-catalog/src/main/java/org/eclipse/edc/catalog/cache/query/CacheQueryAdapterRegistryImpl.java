@@ -14,9 +14,7 @@
 
 package org.eclipse.edc.catalog.cache.query;
 
-import org.eclipse.edc.catalog.spi.CacheQueryAdapter;
-import org.eclipse.edc.catalog.spi.CacheQueryAdapterRegistry;
-import org.eclipse.edc.catalog.spi.QueryResponse;
+import org.eclipse.edc.catalog.spi.*;
 import org.eclipse.edc.catalog.spi.model.FederatedCatalogCacheQuery;
 import org.eclipse.edc.connector.contract.spi.types.offer.ContractOffer;
 import org.eclipse.edc.spi.EdcException;
@@ -69,4 +67,34 @@ public class CacheQueryAdapterRegistryImpl implements CacheQueryAdapterRegistry 
 
         return responseBuilder.offers(offers.collect(Collectors.toList())).build();
     }
+
+    @Override
+    public QueryConnectorResponse executeConnectorQuery(FederatedCatalogCacheQuery query) {
+
+        var adapters = registry.stream().filter(ad -> ad.canExecute(query)).collect(Collectors.toList());
+
+        if (adapters.isEmpty()) {
+            return QueryConnectorResponse.Builder.newInstance()
+                    .status(QueryConnectorResponse.Status.NO_ADAPTER_FOUND)
+                    .build();
+
+        }
+
+        var responseBuilder = QueryConnectorResponse.Builder.newInstance()
+                .status(QueryConnectorResponse.Status.ACCEPTED);
+        Stream<FederatedCacheNode> nodes = Stream.empty();
+
+        // add the results of all query adapters to the union stream
+        for (var adapter : adapters) {
+            try {
+                nodes = Stream.concat(nodes, adapter.executeConnectorQuery(query));
+            } catch (EdcException ex) {
+                responseBuilder.error("Adapter failed: " + ex.getMessage());
+            }
+        }
+
+        return responseBuilder.nodes(nodes.collect(Collectors.toList())).build();
+    }
+
+
 }

@@ -38,6 +38,8 @@ public interface CacheQueryAdapter {
      */
     @NotNull Stream<ContractOffer> executeQuery(FederatedCatalogCacheQuery query);
 
+    @NotNull Stream<FederatedCacheNode> executeConnectorQuery(FederatedCatalogCacheQuery query);
+
     /**
      * Checks whether a given query can be run by the implementor. This does not limit itself to whether the query
      * is actually translatable, this could even go as far as perform semantic checks on the query.

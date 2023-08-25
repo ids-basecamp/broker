@@ -40,6 +40,10 @@ public class FederatedCatalogDefaultServicesExtension implements ServiceExtensio
 
     @Inject
     private FederatedCacheStore store;
+
+    @Inject
+    private FederatedCacheNodeDirectory directory;
+
     private CacheQueryAdapterRegistry registry;
 
     @Override
@@ -68,6 +72,8 @@ public class FederatedCatalogDefaultServicesExtension implements ServiceExtensio
         if (registry == null) {
             registry = new CacheQueryAdapterRegistryImpl();
             registry.register(new CacheQueryAdapterImpl(store));
+            //registry.register(new CacheQueryAdapterImpl(store, directory));
+            //registry.register(new CacheQueryAdapterImpl(directory));
         }
         return registry;
     }
