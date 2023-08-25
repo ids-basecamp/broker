@@ -71,9 +71,7 @@ public class FederatedCatalogDefaultServicesExtension implements ServiceExtensio
     public CacheQueryAdapterRegistry getCacheQueryAdapterRegistry() {
         if (registry == null) {
             registry = new CacheQueryAdapterRegistryImpl();
-            registry.register(new CacheQueryAdapterImpl(store));
-            //registry.register(new CacheQueryAdapterImpl(store, directory));
-            //registry.register(new CacheQueryAdapterImpl(directory));
+            registry.register(new CacheQueryAdapterImpl(store, directory));
         }
         return registry;
     }
