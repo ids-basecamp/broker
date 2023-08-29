@@ -45,7 +45,7 @@ public interface FederatedCacheNodeStatements {
         return "last_crawled";
     }
 
-    default String getContractOffersCount() {
+    default String getContractOffersCountColumn() {
         return "contract_offers_count";
     }
 

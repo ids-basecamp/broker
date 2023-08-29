@@ -47,7 +47,8 @@ public class BaseSqlDialectStatements implements FederatedCacheNodeStatements {
                 getFederatedCacheNodeTable(),
                 getOnlineStatusColumn(),
                 getLastCrawledColumn(),
-                getContractOffersCount());
+                getContractOffersCountColumn(),
+                getNameColumn());
     }
 
     @Override

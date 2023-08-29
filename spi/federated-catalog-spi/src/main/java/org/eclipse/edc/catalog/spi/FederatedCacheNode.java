@@ -35,7 +35,7 @@ public class FederatedCacheNode {
     @JsonProperty("lastCrawled")
     private final ZonedDateTime lastCrawled;
     @JsonProperty("contractOffersCount")
-    private Integer contractOffersCount;
+    private final Integer contractOffersCount;
 
     @JsonCreator
     public FederatedCacheNode(@JsonProperty("name") String name,
