@@ -1,0 +1,1 @@
+docker-compose -p ids-basecamp-broker up -d
