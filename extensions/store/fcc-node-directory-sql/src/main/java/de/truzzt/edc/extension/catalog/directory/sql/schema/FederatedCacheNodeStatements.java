@@ -37,9 +37,23 @@ public interface FederatedCacheNodeStatements {
         return "supported_protocols";
     }
 
+    default String getOnlineStatusColumn() {
+        return "online_status";
+    }
+
+    default String getLastCrawledColumn() {
+        return "last_crawled";
+    }
+
+    default String getContractOffersCount() {
+        return "contract_offers_count";
+    }
+
     String getInsertTemplate();
 
     String getCountByNameTemplate();
+
+    String getUpdateCrawlerExecutionTemplate();
 
     String getDeleteByNameTemplate();
 

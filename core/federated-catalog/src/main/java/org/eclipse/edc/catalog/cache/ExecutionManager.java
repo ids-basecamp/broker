@@ -17,15 +17,17 @@ package org.eclipse.edc.catalog.cache;
 import org.eclipse.edc.catalog.cache.crawler.CatalogCrawler;
 import org.eclipse.edc.catalog.spi.CrawlerErrorHandler;
 import org.eclipse.edc.catalog.spi.CrawlerSuccessHandler;
-import org.eclipse.edc.catalog.spi.FederatedCacheNodeDirectory;
+import org.eclipse.edc.catalog.spi.FederatedCacheNode;
 import org.eclipse.edc.catalog.spi.FederatedCacheNodeFilter;
 import org.eclipse.edc.catalog.spi.NodeQueryAdapterRegistry;
 import org.eclipse.edc.catalog.spi.WorkItem;
+import org.eclipse.edc.catalog.spi.directory.FederatedCacheNodeDirectory;
 import org.eclipse.edc.catalog.spi.model.ExecutionPlan;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.Queue;
@@ -166,7 +168,7 @@ public class ExecutionManager {
 
     private List<WorkItem> fetchWorkItems() {
         // use all nodes EXCEPT self
-        return directory.getAll().stream().filter(nodeFilter).map(n -> new WorkItem(n.getTargetUrl(), selectProtocol(n.getSupportedProtocols()))).collect(Collectors.toList());
+        return directory.getAll().stream().filter(nodeFilter).map(n -> new WorkItem(n.getName(), n.getTargetUrl(), selectProtocol(n.getSupportedProtocols()))).collect(Collectors.toList());
     }
 
     private String selectProtocol(List<String> supportedProtocols) {
@@ -177,6 +179,9 @@ public class ExecutionManager {
     @NotNull
     private CrawlerErrorHandler createErrorHandlers(Monitor monitor, Queue<WorkItem> workItems) {
         return workItem -> {
+            var cacheNode = new FederatedCacheNode(workItem.getName(), false, ZonedDateTime.now(), 0);
+            directory.updateCrawlerExecution(cacheNode);
+
             if (workItem.getErrors().size() > 7) {
                 monitor.severe(message(format("The following workitem has errored out more than 5 times. We'll discard it now: [%s]", workItem)));
             } else {

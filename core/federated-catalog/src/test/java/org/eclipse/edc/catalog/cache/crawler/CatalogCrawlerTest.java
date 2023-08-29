@@ -57,7 +57,7 @@ class CatalogCrawlerTest {
         var adapter = new NodeQueryAdapter() {
             @Override
             public CompletableFuture<UpdateResponse> sendRequest(UpdateRequest request) {
-                return CompletableFuture.completedFuture(new UpdateResponse(target.getUrl(), createCatalog()));
+                return CompletableFuture.completedFuture(new UpdateResponse("connector-1", target.getUrl(), createCatalog()));
             }
         };
         assertThat(crawler.run(target, adapter)).isCompleted();
@@ -97,6 +97,6 @@ class CatalogCrawlerTest {
 
     @NotNull
     private WorkItem createWorkItem() {
-        return new WorkItem("test-url", "test-protocol");
+        return new WorkItem("connector-1", "test-url", "test-protocol");
     }
 }

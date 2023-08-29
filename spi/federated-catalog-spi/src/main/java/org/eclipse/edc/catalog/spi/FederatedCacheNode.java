@@ -17,6 +17,7 @@ package org.eclipse.edc.catalog.spi;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.time.ZonedDateTime;
 import java.util.List;
 
 /**
@@ -29,7 +30,12 @@ public class FederatedCacheNode {
     private final String targetUrl;
     @JsonProperty("supportedProtocols")
     private final List<String> supportedProtocols;
-
+    @JsonProperty("onlineStatus")
+    private final Boolean onlineStatus;
+    @JsonProperty("lastCrawled")
+    private final ZonedDateTime lastCrawled;
+    @JsonProperty("contractOffersCount")
+    private Integer contractOffersCount;
 
     @JsonCreator
     public FederatedCacheNode(@JsonProperty("name") String name,
@@ -38,6 +44,27 @@ public class FederatedCacheNode {
         this.name = name;
         this.targetUrl = targetUrl;
         this.supportedProtocols = supportedProtocols;
+
+        this.onlineStatus = null;
+        this.lastCrawled = null;
+        this.contractOffersCount = null;
+    }
+
+    public FederatedCacheNode(@JsonProperty("name") String name,
+                              @JsonProperty("onlineStatus") Boolean onlineStatus,
+                              @JsonProperty("lastCrawled") ZonedDateTime lastCrawled,
+                              @JsonProperty("contractOffersCount") Integer contractOffersCount) {
+        this.name = name;
+        this.onlineStatus = onlineStatus;
+        this.lastCrawled = lastCrawled;
+        this.contractOffersCount = contractOffersCount;
+
+        this.targetUrl = null;
+        this.supportedProtocols = null;
+    }
+
+    public String getName() {
+        return name;
     }
 
     public String getTargetUrl() {
@@ -48,7 +75,16 @@ public class FederatedCacheNode {
         return supportedProtocols;
     }
 
-    public String getName() {
-        return name;
+    public Boolean getOnlineStatus() {
+        return onlineStatus;
     }
+
+    public ZonedDateTime getLastCrawled() {
+        return lastCrawled;
+    }
+
+    public Integer getContractOffersCount() {
+        return contractOffersCount;
+    }
+
 }

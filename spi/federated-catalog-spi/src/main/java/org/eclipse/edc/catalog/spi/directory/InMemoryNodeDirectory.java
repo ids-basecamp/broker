@@ -19,6 +19,12 @@ public class InMemoryNodeDirectory implements FederatedCacheNodeDirectory {
     }
 
     @Override
+    public void updateCrawlerExecution(FederatedCacheNode node) {
+        cache.remove(node);
+        cache.add(node);
+    }
+
+    @Override
     public boolean delete(FederatedCacheNode node) {
         var existingNode = cache.stream()
                 .filter(f -> f.getName().equals(node.getName()))

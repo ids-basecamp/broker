@@ -19,6 +19,7 @@ import org.eclipse.edc.catalog.cache.query.IdsMultipartNodeQueryAdapter;
 import org.eclipse.edc.catalog.spi.CacheConfiguration;
 import org.eclipse.edc.catalog.spi.CachedAsset;
 import org.eclipse.edc.catalog.spi.Catalog;
+import org.eclipse.edc.catalog.spi.FederatedCacheNode;
 import org.eclipse.edc.catalog.spi.FederatedCacheNodeFilter;
 import org.eclipse.edc.catalog.spi.FederatedCacheStore;
 import org.eclipse.edc.catalog.spi.NodeQueryAdapterRegistry;
@@ -34,6 +35,8 @@ import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.spi.system.health.HealthCheckResult;
 import org.eclipse.edc.spi.system.health.HealthCheckService;
+
+import java.time.ZonedDateTime;
 
 import static java.util.Optional.ofNullable;
 
@@ -119,6 +122,10 @@ public class FederatedCatalogCacheExtension implements ServiceExtension {
      * @param updateResponse The response that contains the catalog
      */
     private void persist(UpdateResponse updateResponse) {
+        var offersCount = updateResponse.getCatalog().getContractOffers().size();
+        var cacheNode = new FederatedCacheNode(updateResponse.getConnectorId(), true, ZonedDateTime.now(), offersCount);
+        directory.updateCrawlerExecution(cacheNode);
+
         updateResponse.getCatalog().getContractOffers().forEach(offer -> {
             offer.getAsset().getProperties().put(CachedAsset.PROPERTY_ORIGINATOR, updateResponse.getSource());
             store.save(offer);

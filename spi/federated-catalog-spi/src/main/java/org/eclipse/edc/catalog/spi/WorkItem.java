@@ -18,22 +18,28 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class WorkItem {
+    private final String name;
     private final String url;
     private final String protocolName;
     private final List<String> errors;
 
-    public WorkItem(String url, String protocolName) {
+    public WorkItem(String name, String url, String protocolName) {
+        this.name = name;
         this.url = url;
         this.protocolName = protocolName;
         errors = new ArrayList<>();
     }
 
-    public String getProtocol() {
-        return protocolName;
+    public String getName() {
+        return name;
     }
 
     public String getUrl() {
         return url;
+    }
+
+    public String getProtocol() {
+        return protocolName;
     }
 
     public void error(String message) {

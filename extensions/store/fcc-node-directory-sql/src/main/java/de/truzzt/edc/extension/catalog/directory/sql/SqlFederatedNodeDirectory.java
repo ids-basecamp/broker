@@ -40,6 +40,8 @@ public class SqlFederatedNodeDirectory extends AbstractSqlStore implements Feder
 
     private final String federatedCacheNodeExistsMessage = "Federated Cache Node with Name %s already exists";
 
+    private final String federatedCacheNodeNoExistsMessage = "Federated Cache Node with Name %s doesn't exists";
+
 
     public SqlFederatedNodeDirectory(DataSourceRegistry dataSourceRegistry,
                                      String dataSourceName,
@@ -82,6 +84,33 @@ public class SqlFederatedNodeDirectory extends AbstractSqlStore implements Feder
                         federatedCacheNode.getName(),
                         federatedCacheNode.getTargetUrl(),
                         toJson(federatedCacheNode.getSupportedProtocols())
+                );
+
+            } catch (Exception e) {
+                throw new EdcPersistenceException(e.getMessage(), e);
+            }
+        });
+    }
+
+    @Override
+    public void updateCrawlerExecution(FederatedCacheNode federatedCacheNode) {
+        Objects.requireNonNull(federatedCacheNode);
+        Objects.requireNonNull(federatedCacheNode.getName());
+        Objects.requireNonNull(federatedCacheNode.getOnlineStatus());
+        Objects.requireNonNull(federatedCacheNode.getLastCrawled());
+        Objects.requireNonNull(federatedCacheNode.getContractOffersCount());
+
+        transactionContext.execute(() -> {
+            try (var connection = getConnection()) {
+                if (!existsByName(connection, federatedCacheNode.getName())) {
+                    throw new EdcPersistenceException(String.format(federatedCacheNodeNoExistsMessage, federatedCacheNode.getName()));
+                }
+
+                executeQuery(connection, statements.getUpdateCrawlerExecutionTemplate(),
+                        federatedCacheNode.getOnlineStatus(),
+                        federatedCacheNode.getLastCrawled(),
+                        federatedCacheNode.getContractOffersCount(),
+                        federatedCacheNode.getName()
                 );
 
             } catch (Exception e) {

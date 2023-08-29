@@ -42,6 +42,15 @@ public class BaseSqlDialectStatements implements FederatedCacheNodeStatements {
     }
 
     @Override
+    public String getUpdateCrawlerExecutionTemplate() {
+        return format("UPDATE %s SET %s = ?, %s = ?, %s = ? WHERE %s = ?",
+                getFederatedCacheNodeTable(),
+                getOnlineStatusColumn(),
+                getLastCrawledColumn(),
+                getContractOffersCount());
+    }
+
+    @Override
     public String getDeleteByNameTemplate() {
         return format("DELETE FROM %s WHERE %s = ?",
                 getFederatedCacheNodeTable(),

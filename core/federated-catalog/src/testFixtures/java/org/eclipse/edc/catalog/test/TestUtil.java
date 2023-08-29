@@ -32,7 +32,7 @@ public class TestUtil {
     public static final String TEST_PROTOCOL = "test-protocol";
 
     public static WorkItem createWorkItem() {
-        return new WorkItem("test-url", "test-protocol");
+        return new WorkItem("connector-1", "test-url", "test-protocol");
     }
 
     @NotNull

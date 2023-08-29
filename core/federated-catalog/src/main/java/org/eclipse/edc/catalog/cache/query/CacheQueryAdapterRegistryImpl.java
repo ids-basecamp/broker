@@ -14,7 +14,11 @@
 
 package org.eclipse.edc.catalog.cache.query;
 
-import org.eclipse.edc.catalog.spi.*;
+import org.eclipse.edc.catalog.spi.CacheQueryAdapter;
+import org.eclipse.edc.catalog.spi.CacheQueryAdapterRegistry;
+import org.eclipse.edc.catalog.spi.FederatedCacheNode;
+import org.eclipse.edc.catalog.spi.QueryConnectorResponse;
+import org.eclipse.edc.catalog.spi.QueryResponse;
 import org.eclipse.edc.catalog.spi.model.FederatedCatalogCacheQuery;
 import org.eclipse.edc.connector.contract.spi.types.offer.ContractOffer;
 import org.eclipse.edc.spi.EdcException;
