@@ -186,7 +186,7 @@ public class SqlFederatedCacheStore extends AbstractSqlStore implements Federate
 
     private ZonedDateTime mapToZonedDateTime(ResultSet resultSet, String column) throws Exception {
         return resultSet.getString(column) != null ?
-                Instant.ofEpochSecond(resultSet.getLong(statements.getOfferStartColumn())).atZone(ZoneId.of("Z")) :
+                Instant.ofEpochSecond(resultSet.getLong(column)).atZone(ZoneId.of("Z")) :
                 null;
     }
 }

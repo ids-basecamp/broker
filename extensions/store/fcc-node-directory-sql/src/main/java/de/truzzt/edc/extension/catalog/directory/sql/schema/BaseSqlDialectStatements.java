@@ -42,6 +42,13 @@ public class BaseSqlDialectStatements implements FederatedCacheNodeStatements {
     }
 
     @Override
+    public String getFindByNameTemplate() {
+        return format("SELECT * FROM %s WHERE %s = ?",
+                getFederatedCacheNodeTable(),
+                getNameColumn());
+    }
+
+    @Override
     public String getUpdateCrawlerExecutionTemplate() {
         return format("UPDATE %s SET %s = ?, %s = ?, %s = ? WHERE %s = ?",
                 getFederatedCacheNodeTable(),

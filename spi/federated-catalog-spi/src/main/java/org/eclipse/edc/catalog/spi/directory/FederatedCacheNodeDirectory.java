@@ -7,4 +7,6 @@ public interface FederatedCacheNodeDirectory extends org.eclipse.edc.catalog.spi
     void updateCrawlerExecution(FederatedCacheNode node);
 
     boolean delete(FederatedCacheNode node);
+
+    FederatedCacheNode findByName(String name);
 }

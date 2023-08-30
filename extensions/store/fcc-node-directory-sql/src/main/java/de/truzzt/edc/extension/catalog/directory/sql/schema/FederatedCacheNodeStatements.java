@@ -53,6 +53,8 @@ public interface FederatedCacheNodeStatements {
 
     String getCountByNameTemplate();
 
+    String getFindByNameTemplate();
+
     String getUpdateCrawlerExecutionTemplate();
 
     String getDeleteByNameTemplate();

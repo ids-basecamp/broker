@@ -30,19 +30,19 @@ import org.eclipse.edc.spi.types.domain.asset.Asset;
  * TODO: This must be updated to contain a list of {@link Asset}s after https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/pull/159 has been merged!
  */
 public class UpdateResponse {
-    private final String connectorId;
+    private final String federatedCacheNodeName;
     private final String source;
     private final Catalog catalog;
 
     @JsonCreator
-    public UpdateResponse(String connectorId, @JsonProperty("source") String source, @JsonProperty("catalog") Catalog assetNames) {
-        this.connectorId = connectorId;
+    public UpdateResponse(String federatedCacheNodeName, @JsonProperty("source") String source, @JsonProperty("catalog") Catalog assetNames) {
+        this.federatedCacheNodeName = federatedCacheNodeName;
         this.source = source;
         this.catalog = assetNames;
     }
 
-    public String getConnectorId() {
-        return connectorId;
+    public String getFederatedCacheNodeName() {
+        return federatedCacheNodeName;
     }
 
     public Catalog getCatalog() {

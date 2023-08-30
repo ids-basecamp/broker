@@ -21,13 +21,20 @@ import org.eclipse.edc.catalog.spi.NodeQueryAdapter;
  * {@link NodeQueryAdapter}s accept {@code UpdateRequests} to send out catalog queries
  */
 public class UpdateRequest {
+
+    private final String federatedCacheNodeName;
     private final String nodeUrl;
 
-    public UpdateRequest(String nodeUrl) {
+    public UpdateRequest(String federatedCacheNodeName, String nodeUrl) {
+        this.federatedCacheNodeName = federatedCacheNodeName;
         this.nodeUrl = nodeUrl;
     }
 
     public String getNodeUrl() {
         return nodeUrl;
+    }
+
+    public String getFederatedCacheNodeName() {
+        return federatedCacheNodeName;
     }
 }

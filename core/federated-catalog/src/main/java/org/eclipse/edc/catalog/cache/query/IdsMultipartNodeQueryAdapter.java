@@ -45,7 +45,7 @@ public class IdsMultipartNodeQueryAdapter implements NodeQueryAdapter {
                 .build();
         var allOffers = requestFetcher.fetch(catalogRequest, 0, 100);
 
-        return allOffers.thenApply(list -> new UpdateResponse(connectorId, getNodeUrl(updateRequest),
+        return allOffers.thenApply(list -> new UpdateResponse(updateRequest.getFederatedCacheNodeName(), getNodeUrl(updateRequest),
                 Catalog.Builder.newInstance().id(UUID.randomUUID().toString()).contractOffers(list).build()));
     }
 

@@ -66,7 +66,7 @@ public class CatalogCrawler {
     public CompletableFuture<UpdateResponse> run(WorkItem target, @NotNull NodeQueryAdapter adapter) {
         try {
             monitor.debug(format("%s: WorkItem acquired", crawlerId));
-            var updateFuture = adapter.sendRequest(new UpdateRequest(target.getUrl()));
+            var updateFuture = adapter.sendRequest(new UpdateRequest(target.getName(), target.getUrl()));
             return updateFuture.whenComplete((updateResponse, throwable) -> {
                 if (throwable != null) {
                     handleError(target, throwable.getMessage());

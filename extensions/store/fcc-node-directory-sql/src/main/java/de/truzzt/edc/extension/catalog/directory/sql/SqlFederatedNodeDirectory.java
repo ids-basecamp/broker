@@ -28,6 +28,9 @@ import org.eclipse.edc.transaction.spi.TransactionContext;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -108,7 +111,7 @@ public class SqlFederatedNodeDirectory extends AbstractSqlStore implements Feder
 
                 executeQuery(connection, statements.getUpdateCrawlerExecutionTemplate(),
                         federatedCacheNode.getOnlineStatus(),
-                        federatedCacheNode.getLastCrawled(),
+                        mapFromZonedDateTime(federatedCacheNode.getLastCrawled()),
                         federatedCacheNode.getContractOffersCount(),
                         federatedCacheNode.getName()
                 );
@@ -140,6 +143,22 @@ public class SqlFederatedNodeDirectory extends AbstractSqlStore implements Feder
         return deleted;
     }
 
+    @Override
+    public FederatedCacheNode findByName(String name) {
+        Objects.requireNonNull(name);
+        FederatedCacheNode fcn = null;
+        var sql = statements.getFindByNameTemplate();
+        try (var connection = getConnection()) {
+            if (existsByName(connection, name)) {
+                var stream = executeQuery(connection, false, this::mapResultSet, sql, name);
+                fcn = stream.findFirst().get();
+            }
+        } catch (Exception e) {
+            throw new EdcPersistenceException(e.getMessage(), e);
+        }
+        return fcn;
+    }
+
     private FederatedCacheNode mapResultSet(ResultSet resultSet) throws Exception {
 
         List<String> supportedProtocols;
@@ -152,7 +171,10 @@ public class SqlFederatedNodeDirectory extends AbstractSqlStore implements Feder
         return new FederatedCacheNode(
                 resultSet.getString(statements.getNameColumn()),
                 resultSet.getString(statements.getTargetUrlColumn()),
-                supportedProtocols);
+                supportedProtocols,
+                resultSet.getBoolean(statements.getOnlineStatusColumn()),
+                mapToZonedDateTime(resultSet, statements.getLastCrawledColumn()),
+                resultSet.getInt(statements.getContractOffersCountColumn()));
     }
 
     private boolean existsByName(Connection connection, String name) {
@@ -164,5 +186,17 @@ public class SqlFederatedNodeDirectory extends AbstractSqlStore implements Feder
 
     private long mapCount(ResultSet resultSet) throws SQLException {
         return resultSet.getLong(1);
+    }
+
+    private Long mapFromZonedDateTime(ZonedDateTime zonedDateTime) {
+        return zonedDateTime != null ?
+                zonedDateTime.toEpochSecond() :
+                null;
+    }
+
+    private ZonedDateTime mapToZonedDateTime(ResultSet resultSet, String column) throws Exception {
+        return resultSet.getString(column) != null ?
+                Instant.ofEpochSecond(resultSet.getLong(column)).atZone(ZoneId.of("Z")) :
+                null;
     }
 }

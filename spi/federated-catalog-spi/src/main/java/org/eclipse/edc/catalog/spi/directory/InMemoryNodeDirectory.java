@@ -36,4 +36,9 @@ public class InMemoryNodeDirectory implements FederatedCacheNodeDirectory {
 
         return cache.remove(existingNode.get());
     }
+
+    @Override
+    public FederatedCacheNode findByName(String name) {
+        return cache.stream().filter(c -> c.getName().equals(name)).findFirst().orElse(null);
+    }
 }

@@ -63,6 +63,15 @@ public class FederatedCacheNode {
         this.supportedProtocols = null;
     }
 
+    public FederatedCacheNode(String name, String targetUrl, List<String> supportedProtocols, Boolean onlineStatus, ZonedDateTime lastCrawled, Integer contractOffersCount) {
+        this.name = name;
+        this.targetUrl = targetUrl;
+        this.supportedProtocols = supportedProtocols;
+        this.onlineStatus = onlineStatus;
+        this.lastCrawled = lastCrawled;
+        this.contractOffersCount = contractOffersCount;
+    }
+
     public String getName() {
         return name;
     }
