@@ -26,7 +26,7 @@ import java.util.List;
 public class FederatedCacheNode {
     @JsonProperty("name")
     private final String name;
-    @JsonProperty("url")
+    @JsonProperty("targetUrl")
     private final String targetUrl;
     @JsonProperty("supportedProtocols")
     private final List<String> supportedProtocols;

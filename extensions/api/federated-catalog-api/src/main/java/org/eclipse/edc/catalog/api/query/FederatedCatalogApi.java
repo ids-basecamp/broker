@@ -40,6 +40,13 @@ public interface FederatedCatalogApi {
     )
     Collection<ContractOffer> getCachedCatalog(FederatedCatalogCacheQuery federatedCatalogCacheQuery);
 
+    @Operation(description = "Obtains all connectors registered",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "A list of connectors is returned, potentially empty",
+                            content = @Content(array = @ArraySchema(schema = @Schema(implementation = FederatedCacheNode.class)))),
+                    @ApiResponse(responseCode = "50x", description = "A Query could not be completed due to an internal error")
+            }
 
+    )
     Collection<FederatedCacheNode> getConnectors(FederatedCatalogCacheQuery federatedCatalogCacheQuery);
 }
