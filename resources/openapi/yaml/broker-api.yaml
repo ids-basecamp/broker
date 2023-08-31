@@ -1,0 +1,357 @@
+openapi: 3.0.1
+paths:
+  /data:
+    post:
+      operationId: request
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              example: null
+              properties:
+                header:
+                  type: object
+                  example: null
+                payload:
+                  type: string
+                  example: null
+      responses:
+        default:
+          content:
+            multipart/form-data:
+              schema:
+                $ref: '#/components/schemas/FormDataMultiPart'
+          description: default response
+components:
+  schemas:
+    BodyPart:
+      type: object
+      example: null
+      properties:
+        contentDisposition:
+          $ref: '#/components/schemas/ContentDisposition'
+        entity:
+          type: object
+          example: null
+        headers:
+          type: object
+          additionalProperties:
+            type: array
+            example: null
+            items:
+              type: string
+              example: null
+          example: null
+          properties:
+            empty:
+              type: boolean
+              example: null
+        mediaType:
+          $ref: '#/components/schemas/MediaType'
+        messageBodyWorkers:
+          $ref: '#/components/schemas/MessageBodyWorkers'
+        parameterizedHeaders:
+          type: object
+          additionalProperties:
+            type: array
+            example: null
+            items:
+              $ref: '#/components/schemas/ParameterizedHeader'
+          example: null
+          properties:
+            empty:
+              type: boolean
+              example: null
+        parent:
+          $ref: '#/components/schemas/MultiPart'
+        providers:
+          $ref: '#/components/schemas/Providers'
+    ContentDisposition:
+      type: object
+      example: null
+      properties:
+        creationDate:
+          type: string
+          format: date-time
+          example: null
+        fileName:
+          type: string
+          example: null
+        modificationDate:
+          type: string
+          format: date-time
+          example: null
+        parameters:
+          type: object
+          additionalProperties:
+            type: string
+            example: null
+          example: null
+        readDate:
+          type: string
+          format: date-time
+          example: null
+        size:
+          type: integer
+          format: int64
+          example: null
+        type:
+          type: string
+          example: null
+    FormDataBodyPart:
+      type: object
+      example: null
+      properties:
+        contentDisposition:
+          $ref: '#/components/schemas/ContentDisposition'
+        entity:
+          type: object
+          example: null
+        formDataContentDisposition:
+          $ref: '#/components/schemas/FormDataContentDisposition'
+        headers:
+          type: object
+          additionalProperties:
+            type: array
+            example: null
+            items:
+              type: string
+              example: null
+          example: null
+          properties:
+            empty:
+              type: boolean
+              example: null
+        mediaType:
+          $ref: '#/components/schemas/MediaType'
+        messageBodyWorkers:
+          $ref: '#/components/schemas/MessageBodyWorkers'
+        name:
+          type: string
+          example: null
+        parameterizedHeaders:
+          type: object
+          additionalProperties:
+            type: array
+            example: null
+            items:
+              $ref: '#/components/schemas/ParameterizedHeader'
+          example: null
+          properties:
+            empty:
+              type: boolean
+              example: null
+        parent:
+          $ref: '#/components/schemas/MultiPart'
+        providers:
+          $ref: '#/components/schemas/Providers'
+        simple:
+          type: boolean
+          example: null
+        value:
+          type: string
+          example: null
+    FormDataContentDisposition:
+      type: object
+      example: null
+      properties:
+        creationDate:
+          type: string
+          format: date-time
+          example: null
+        fileName:
+          type: string
+          example: null
+        modificationDate:
+          type: string
+          format: date-time
+          example: null
+        name:
+          type: string
+          example: null
+        parameters:
+          type: object
+          additionalProperties:
+            type: string
+            example: null
+          example: null
+        readDate:
+          type: string
+          format: date-time
+          example: null
+        size:
+          type: integer
+          format: int64
+          example: null
+        type:
+          type: string
+          example: null
+    FormDataMultiPart:
+      type: object
+      example: null
+      properties:
+        bodyParts:
+          type: array
+          example: null
+          items:
+            $ref: '#/components/schemas/BodyPart'
+        contentDisposition:
+          $ref: '#/components/schemas/ContentDisposition'
+        entity:
+          type: object
+          example: null
+        fields:
+          type: object
+          additionalProperties:
+            type: array
+            example: null
+            items:
+              $ref: '#/components/schemas/FormDataBodyPart'
+          example: null
+        headers:
+          type: object
+          additionalProperties:
+            type: array
+            example: null
+            items:
+              type: string
+              example: null
+          example: null
+          properties:
+            empty:
+              type: boolean
+              example: null
+        mediaType:
+          $ref: '#/components/schemas/MediaType'
+        messageBodyWorkers:
+          $ref: '#/components/schemas/MessageBodyWorkers'
+        parameterizedHeaders:
+          type: object
+          additionalProperties:
+            type: array
+            example: null
+            items:
+              $ref: '#/components/schemas/ParameterizedHeader'
+          example: null
+          properties:
+            empty:
+              type: boolean
+              example: null
+        parent:
+          $ref: '#/components/schemas/MultiPart'
+        providers:
+          $ref: '#/components/schemas/Providers'
+    MediaType:
+      type: object
+      example: null
+      properties:
+        parameters:
+          type: object
+          additionalProperties:
+            type: string
+            example: null
+          example: null
+        subtype:
+          type: string
+          example: null
+        type:
+          type: string
+          example: null
+        wildcardSubtype:
+          type: boolean
+          example: null
+        wildcardType:
+          type: boolean
+          example: null
+    MessageBodyWorkers:
+      type: object
+      example: null
+    MultiPart:
+      type: object
+      example: null
+      properties:
+        bodyParts:
+          type: array
+          example: null
+          items:
+            $ref: '#/components/schemas/BodyPart'
+        contentDisposition:
+          $ref: '#/components/schemas/ContentDisposition'
+        entity:
+          type: object
+          example: null
+        headers:
+          type: object
+          additionalProperties:
+            type: array
+            example: null
+            items:
+              type: string
+              example: null
+          example: null
+          properties:
+            empty:
+              type: boolean
+              example: null
+        mediaType:
+          $ref: '#/components/schemas/MediaType'
+        messageBodyWorkers:
+          $ref: '#/components/schemas/MessageBodyWorkers'
+        parameterizedHeaders:
+          type: object
+          additionalProperties:
+            type: array
+            example: null
+            items:
+              $ref: '#/components/schemas/ParameterizedHeader'
+          example: null
+          properties:
+            empty:
+              type: boolean
+              example: null
+        parent:
+          $ref: '#/components/schemas/MultiPart'
+        providers:
+          $ref: '#/components/schemas/Providers'
+    MultivaluedMapStringParameterizedHeader:
+      type: object
+      additionalProperties:
+        type: array
+        example: null
+        items:
+          $ref: '#/components/schemas/ParameterizedHeader'
+      example: null
+      properties:
+        empty:
+          type: boolean
+          example: null
+    MultivaluedMapStringString:
+      type: object
+      additionalProperties:
+        type: array
+        example: null
+        items:
+          type: string
+          example: null
+      example: null
+      properties:
+        empty:
+          type: boolean
+          example: null
+    ParameterizedHeader:
+      type: object
+      example: null
+      properties:
+        parameters:
+          type: object
+          additionalProperties:
+            type: string
+            example: null
+          example: null
+        value:
+          type: string
+          example: null
+    Providers:
+      type: object
+      example: null

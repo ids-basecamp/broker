@@ -43,7 +43,7 @@ class FederatedCacheNodeDocumentSerializationTest {
 
         assertThat(s).isNotNull()
                 .contains("\"name\":\"node-test\"")
-                .contains("\"url\":\"http://test.com\"")
+                .contains("\"targetUrl\":\"http://test.com\"")
                 .contains("\"partitionKey\":\"test-process\"")
                 .contains("\"supportedProtocols\":[\"ids\",\"rest\"]");
     }

@@ -1,5 +1,28 @@
 openapi: 3.0.1
 paths:
+  /connectors:
+    post:
+      description: Obtains all connectors registered
+      operationId: getConnectors
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FederatedCatalogCacheQuery'
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: array
+                example: null
+                items:
+                  $ref: '#/components/schemas/FederatedCacheNode'
+          description: "A list of connectors is returned, potentially empty"
+        "50x":
+          description: A Query could not be completed due to an internal error
+      tags:
+      - Federated Catalog
   /federatedcatalog:
     post:
       description: Obtains all contract offers currently held by this cache instance
@@ -140,6 +163,37 @@ components:
         uid:
           type: string
           example: null
+    FederatedCacheNode:
+      type: object
+      example: null
+      properties:
+        contractOffersCount:
+          type: integer
+          format: int32
+          example: null
+        lastCrawled:
+          type: string
+          format: date-time
+          example: null
+        name:
+          type: string
+          example: null
+        onlineStatus:
+          type: boolean
+          example: null
+        supportedProtocols:
+          type: array
+          example: null
+          items:
+            type: string
+            example: null
+        targetUrl:
+          type: string
+          example: null
+        url:
+          type: string
+          example: null
+          writeOnly: true
     FederatedCatalogCacheQuery:
       type: object
       example: null
