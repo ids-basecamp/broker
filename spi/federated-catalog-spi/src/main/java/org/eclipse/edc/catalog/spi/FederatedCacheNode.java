@@ -37,7 +37,6 @@ public class FederatedCacheNode {
     @JsonProperty("contractOffersCount")
     private final Integer contractOffersCount;
 
-
     public FederatedCacheNode(@JsonProperty("name") String name,
                               @JsonProperty("url") String targetUrl,
                               @JsonProperty("supportedProtocols") List<String> supportedProtocols) {
@@ -62,6 +61,7 @@ public class FederatedCacheNode {
         this.targetUrl = null;
         this.supportedProtocols = null;
     }
+    
     @JsonCreator
     public FederatedCacheNode(@JsonProperty("name") String name,
                               @JsonProperty("url") String targetUrl,

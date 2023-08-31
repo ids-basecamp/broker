@@ -1,3 +1,8 @@
+/*
+ *
+ *
+ */
+
 package org.eclipse.edc.catalog.spi;
 
 import java.util.ArrayList;

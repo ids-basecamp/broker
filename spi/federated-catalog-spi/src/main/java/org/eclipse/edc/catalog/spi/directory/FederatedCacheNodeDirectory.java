@@ -1,3 +1,8 @@
+/*
+ *
+ *
+ */
+
 package org.eclipse.edc.catalog.spi.directory;
 
 import org.eclipse.edc.catalog.spi.FederatedCacheNode;
