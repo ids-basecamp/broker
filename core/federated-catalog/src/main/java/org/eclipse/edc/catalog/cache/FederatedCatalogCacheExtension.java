@@ -123,12 +123,8 @@ public class FederatedCatalogCacheExtension implements ServiceExtension {
      */
     private void persist(UpdateResponse updateResponse) {
         var offersCount = updateResponse.getCatalog().getContractOffers().size();
-        FederatedCacheNode node = directory.findByName(updateResponse.getFederatedCacheNodeName());
-
         var cacheNode = new FederatedCacheNode(
                 updateResponse.getFederatedCacheNodeName(),
-                node.getTargetUrl(),
-                node.getSupportedProtocols(),
                 true,
                 ZonedDateTime.now(),
                 offersCount);
