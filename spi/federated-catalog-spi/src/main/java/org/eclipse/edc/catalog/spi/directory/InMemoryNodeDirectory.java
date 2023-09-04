@@ -34,8 +34,19 @@ public class InMemoryNodeDirectory implements FederatedCacheNodeDirectory {
 
     @Override
     public void updateCrawlerExecution(FederatedCacheNode node) {
-        cache.remove(node);
-        cache.add(node);
+        var existingNode = cache.stream()
+                .filter(f -> f.getName().equals(node.getName()))
+                .findFirst().get();
+        cache.remove(existingNode);
+
+        var updatedNode = new FederatedCacheNode(existingNode.getName(),
+                existingNode.getTargetUrl(),
+                existingNode.getSupportedProtocols(),
+                node.getOnlineStatus(),
+                node.getLastCrawled(),
+                node.getContractOffersCount()
+        );
+        cache.add(updatedNode);
     }
 
     @Override

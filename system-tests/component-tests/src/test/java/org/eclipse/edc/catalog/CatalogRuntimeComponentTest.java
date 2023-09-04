@@ -4,7 +4,7 @@ import org.eclipse.edc.catalog.spi.CachedAsset;
 import org.eclipse.edc.catalog.spi.Catalog;
 import org.eclipse.edc.catalog.spi.CatalogRequest;
 import org.eclipse.edc.catalog.spi.FederatedCacheNode;
-import org.eclipse.edc.catalog.spi.FederatedCacheNodeDirectory;
+import org.eclipse.edc.catalog.spi.directory.FederatedCacheNodeDirectory;
 import org.eclipse.edc.connector.contract.spi.types.offer.ContractOffer;
 import org.eclipse.edc.junit.annotations.ComponentTest;
 import org.eclipse.edc.junit.extensions.EdcExtension;
@@ -70,6 +70,7 @@ public class CatalogRuntimeComponentTest {
     void crawlSingle_noResults(RemoteMessageDispatcher dispatcher, FederatedCacheNodeDirectory directory) {
         // prepare node directory
         insertSingle(directory);
+
         // intercept request egress
         when(dispatcher.send(eq(Catalog.class), isA(CatalogRequest.class), any(MessageContext.class)))
                 .thenReturn(emptyCatalog());
@@ -87,6 +88,7 @@ public class CatalogRuntimeComponentTest {
     void crawlSingle_withResults(RemoteMessageDispatcher dispatcher, FederatedCacheNodeDirectory directory) {
         // prepare node directory
         insertSingle(directory);
+
         // intercept request egress
         when(dispatcher.send(eq(Catalog.class), isA(CatalogRequest.class), any(MessageContext.class)))
                 .thenReturn(randomCatalog(5))
@@ -141,7 +143,6 @@ public class CatalogRuntimeComponentTest {
                     assertThat(queryCatalogApi()).hasSize(2)
                             .noneMatch(co -> co.getId().equals("offer3"));
                 });
-
     }
 
     @Test
@@ -167,7 +168,6 @@ public class CatalogRuntimeComponentTest {
                     verify(dispatcher, atLeast(4)).send(eq(Catalog.class), isA(CatalogRequest.class), any(MessageContext.class));
                     assertThat(queryCatalogApi()).hasSize(3);
                 });
-
     }
 
     @Test
@@ -195,7 +195,6 @@ public class CatalogRuntimeComponentTest {
                             .allSatisfy(co -> assertThat(Integer.parseInt(co.getId().replace("offer", ""))).isIn(1, 2, 3, 4, 5));
                     verify(dispatcher, atLeast(4)).send(eq(Catalog.class), isA(CatalogRequest.class), any(MessageContext.class));
                 });
-
     }
 
     @Test
@@ -216,7 +215,6 @@ public class CatalogRuntimeComponentTest {
                     assertThat(offers).extracting(ContractOffer::getAsset).allSatisfy(a -> assertThat(a.getProperties()).containsEntry(CachedAsset.PROPERTY_ORIGINATOR, "http://test-node.com/api/v1/ids/data"));
                 });
     }
-
 
     @Test
     @DisplayName("Crawl 1000 targets, verify that all offers are collected")
@@ -267,9 +265,6 @@ public class CatalogRuntimeComponentTest {
                 .atMost(TEST_TIMEOUT)
                 .untilAsserted(() ->
                         assertThat(queryCatalogApi()).hasSize(5));
-
-
     }
-
 
 }
