@@ -30,7 +30,12 @@ public class TestFunctions {
     public static final String BASE_PATH = "/api";
     public static final int PORT = getFreePort();
     private static final String PATH = "/federatedcatalog";
+
+    private static final String CONNECTOR_PATH = "/connectors";
     private static final TypeRef<List<ContractOffer>> CONTRACT_OFFER_LIST_TYPE = new TypeRef<>() {
+    };
+
+    private static final TypeRef<List<FederatedCacheNode>> FEDERATED_CACHE_NODE_LIST_TYPE = new TypeRef<>() {
     };
 
     public static CompletableFuture<Catalog> emptyCatalog() {
@@ -68,12 +73,26 @@ public class TestFunctions {
         directory.insert(new FederatedCacheNode("test-node", "http://test-node.com", singletonList("ids-multipart")));
     }
 
+    public static void insertMultiple(FederatedCacheNodeDirectory directory) {
+        directory.insert(new FederatedCacheNode("test-node1", "http://test-node1.com", singletonList("ids-multipart")));
+        directory.insert(new FederatedCacheNode("test-node2", "http://test-node2.com", singletonList("ids-multipart")));
+        directory.insert(new FederatedCacheNode("test-node3", "http://test-node3.com", singletonList("ids-multipart")));
+    }
+
     public static List<ContractOffer> queryCatalogApi() {
         return baseRequest()
                 .body(FederatedCatalogCacheQuery.Builder.newInstance().build())
                 .post(PATH)
                 .body()
                 .as(CONTRACT_OFFER_LIST_TYPE);
+    }
+
+    public static List<FederatedCacheNode> queryConnectorsApi() {
+        return baseRequest()
+                .body(FederatedCatalogCacheQuery.Builder.newInstance().build())
+                .post(CONNECTOR_PATH)
+                .body()
+                .as(FEDERATED_CACHE_NODE_LIST_TYPE);
     }
 
     private static RequestSpecification baseRequest() {
