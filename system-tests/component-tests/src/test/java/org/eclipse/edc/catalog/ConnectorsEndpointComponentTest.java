@@ -1,11 +1,23 @@
+/*
+ *  Copyright (c) 2021 Microsoft Corporation
+ *
+ *  This program and the accompanying materials are made available under the
+ *  terms of the Apache License, Version 2.0 which is available at
+ *  https://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  SPDX-License-Identifier: Apache-2.0
+ *
+ *  Contributors:
+ *       Truzzt GmbH - Initial implementation
+ *
+ */
+
 package org.eclipse.edc.catalog;
 
-import org.eclipse.edc.catalog.spi.CachedAsset;
 import org.eclipse.edc.catalog.spi.Catalog;
 import org.eclipse.edc.catalog.spi.CatalogRequest;
 import org.eclipse.edc.catalog.spi.FederatedCacheNode;
 import org.eclipse.edc.catalog.spi.directory.FederatedCacheNodeDirectory;
-import org.eclipse.edc.connector.contract.spi.types.offer.ContractOffer;
 import org.eclipse.edc.junit.annotations.ComponentTest;
 import org.eclipse.edc.junit.extensions.EdcExtension;
 import org.eclipse.edc.spi.message.MessageContext;
@@ -27,7 +39,6 @@ import static org.awaitility.Awaitility.await;
 import static org.eclipse.edc.catalog.TestFunctions.emptyCatalog;
 import static org.eclipse.edc.catalog.TestFunctions.insertMultiple;
 import static org.eclipse.edc.catalog.TestFunctions.insertSingle;
-import static org.eclipse.edc.catalog.TestFunctions.queryCatalogApi;
 import static org.eclipse.edc.catalog.TestFunctions.queryConnectorsApi;
 import static org.eclipse.edc.catalog.TestFunctions.randomCatalog;
 import static org.mockito.ArgumentMatchers.any;
