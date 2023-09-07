@@ -19,18 +19,19 @@ plugins {
 
 dependencies {
     api(edc.spi.core)
-    implementation(edc.spi.web)
     api(project(":spi:federated-catalog-spi"))
 
     runtimeOnly(edc.core.connector)
-    implementation(libs.jakarta.rsApi)
+
+    implementation(edc.spi.web)
     implementation(edc.api.management.config)
+    implementation(libs.jakarta.rsApi)
 
     // required for integration test
-    testImplementation(testFixtures(project(":core:federated-catalog"))) // provides the TestUtil
     testImplementation(edc.junit)
     testImplementation(edc.ext.http)
     testImplementation(libs.restAssured)
+    testImplementation(testFixtures(project(":core:federated-catalog")))
 }
 
 edcBuild {

@@ -20,9 +20,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import de.truzzt.edc.extension.broker.api.types.ids.util.VocabUtil;
+import org.jetbrains.annotations.NotNull;
 
 import java.net.URI;
-import javax.validation.constraints.NotNull;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "@type")
 @JsonIgnoreProperties(ignoreUnknown = true)

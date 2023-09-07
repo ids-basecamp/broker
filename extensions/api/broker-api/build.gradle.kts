@@ -26,9 +26,9 @@ dependencies {
 
     implementation(edc.ids)
     implementation(edc.ids.jsonld.serdes)
+    implementation(edc.api.management.config)
     implementation(libs.jakarta.rsApi)
     implementation(libs.jersey.multipart)
-    implementation(edc.api.management.config)
 }
 
 publishing {

@@ -22,7 +22,7 @@ import org.eclipse.edc.junit.annotations.ComponentTest;
 import org.eclipse.edc.junit.extensions.EdcExtension;
 import org.eclipse.edc.spi.EdcException;
 import org.eclipse.edc.spi.message.MessageContext;
-import org.eclipse.edc.spi.message.RemoteMessageDispatcher;
+import org.eclipse.edc.spi.message.RemoteMessageDispatcherRegistry;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -36,6 +36,7 @@ import static java.lang.String.valueOf;
 import static java.time.Duration.ofSeconds;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
+import static org.eclipse.edc.catalog.TestFunctions.createAndRegisterDispatcher;
 import static org.eclipse.edc.catalog.TestFunctions.emptyCatalog;
 import static org.eclipse.edc.catalog.TestFunctions.insertMultiple;
 import static org.eclipse.edc.catalog.TestFunctions.insertSingle;
@@ -62,20 +63,24 @@ public class ConnectorsEndpointComponentTest {
                 // give the runtime time to set up everything
                 "edc.catalog.cache.execution.delay.seconds", "1",
                 "web.http.port", valueOf(TestFunctions.PORT),
-                "web.http.path", TestFunctions.BASE_PATH
+                "web.http.path", TestFunctions.BASE_PATH,
+                "edc.api.auth.key", "password"
         ));
     }
 
     @Test
     @DisplayName("Get Connectors endpoint with empty result")
-    void queryConnector_withEmptyResults() {
+    void queryConnector_withEmptyResults(RemoteMessageDispatcherRegistry registry) {
+        createAndRegisterDispatcher(registry);
+
         assertThat(queryConnectorsApi()).hasSize(0);
     }
 
     @Test
     @DisplayName("Get Connectors endpoint with one result")
-    void queryConnector_withOneResults(FederatedCacheNodeDirectory directory) {
-        // prepare node directory
+    void queryConnector_withOneResults(RemoteMessageDispatcherRegistry registry, FederatedCacheNodeDirectory directory) {
+        createAndRegisterDispatcher(registry);
+
         insertSingle(directory);
 
         assertThat(queryConnectorsApi()).hasSize(1);
@@ -83,8 +88,9 @@ public class ConnectorsEndpointComponentTest {
 
     @Test
     @DisplayName("Get Connectors endpoint with many results")
-    void queryConnector_withManyResults(FederatedCacheNodeDirectory directory) {
-        // prepare node directory
+    void queryConnector_withManyResults(RemoteMessageDispatcherRegistry registry, FederatedCacheNodeDirectory directory) {
+        createAndRegisterDispatcher(registry);
+
         insertMultiple(directory);
 
         List<FederatedCacheNode> nodes = queryConnectorsApi();
@@ -93,13 +99,14 @@ public class ConnectorsEndpointComponentTest {
 
     @Test
     @DisplayName("Get Connectors endpoint with one result with online connector status")
-    void queryConnector_withManyResultsOnlineConnector(RemoteMessageDispatcher dispatcher, FederatedCacheNodeDirectory directory) {
-        // prepare node directory
-        insertSingle(directory);
+    void queryConnector_withManyResultsOnlineConnector(RemoteMessageDispatcherRegistry registry, FederatedCacheNodeDirectory directory) {
+        var dispatcher = createAndRegisterDispatcher(registry);
 
         when(dispatcher.send(eq(Catalog.class), isA(CatalogRequest.class), any(MessageContext.class)))
                 .thenReturn(randomCatalog(10))
                 .thenReturn(emptyCatalog());
+
+        insertSingle(directory);
 
         await().pollDelay(ofSeconds(1))
                 .atMost(TEST_TIMEOUT)
@@ -116,12 +123,13 @@ public class ConnectorsEndpointComponentTest {
 
     @Test
     @DisplayName("Get Connectors endpoint with one result with offline connector status")
-    void queryConnector_withManyResultsOfflineConnector(RemoteMessageDispatcher dispatcher, FederatedCacheNodeDirectory directory) {
-        // prepare node directory
-        insertSingle(directory);
+    void queryConnector_withManyResultsOfflineConnector(RemoteMessageDispatcherRegistry registry, FederatedCacheNodeDirectory directory) {
+        var dispatcher = createAndRegisterDispatcher(registry);
 
         when(dispatcher.send(eq(Catalog.class), isA(CatalogRequest.class), any(MessageContext.class)))
                 .thenThrow(new EdcException("Error calling connector"));
+
+        insertSingle(directory);
 
         await().pollDelay(ofSeconds(1))
                 .atMost(TEST_TIMEOUT)

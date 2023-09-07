@@ -9,6 +9,8 @@ import org.eclipse.edc.catalog.spi.FederatedCacheNodeDirectory;
 import org.eclipse.edc.catalog.spi.model.FederatedCatalogCacheQuery;
 import org.eclipse.edc.connector.contract.spi.types.offer.ContractOffer;
 import org.eclipse.edc.policy.model.Policy;
+import org.eclipse.edc.spi.message.RemoteMessageDispatcher;
+import org.eclipse.edc.spi.message.RemoteMessageDispatcherRegistry;
 import org.eclipse.edc.spi.types.domain.asset.Asset;
 
 import java.time.ZonedDateTime;
@@ -25,6 +27,8 @@ import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static java.util.concurrent.CompletableFuture.completedFuture;
 import static org.eclipse.edc.junit.testfixtures.TestUtils.getFreePort;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class TestFunctions {
     public static final String BASE_PATH = "/api";
@@ -37,6 +41,14 @@ public class TestFunctions {
 
     private static final TypeRef<List<FederatedCacheNode>> FEDERATED_CACHE_NODE_LIST_TYPE = new TypeRef<>() {
     };
+
+    public static RemoteMessageDispatcher createAndRegisterDispatcher(RemoteMessageDispatcherRegistry registry) {
+        var dispatcher = mock(RemoteMessageDispatcher.class);
+        when(dispatcher.protocol()).thenReturn("ids-multipart");
+        registry.register(dispatcher);
+
+        return dispatcher;
+    }
 
     public static CompletableFuture<Catalog> emptyCatalog() {
         return completedFuture(catalogBuilder()
@@ -81,6 +93,7 @@ public class TestFunctions {
 
     public static List<ContractOffer> queryCatalogApi() {
         return baseRequest()
+                .header("X-API-Key", "password")
                 .body(FederatedCatalogCacheQuery.Builder.newInstance().build())
                 .post(PATH)
                 .body()

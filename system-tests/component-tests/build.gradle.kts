@@ -18,7 +18,10 @@ plugins {
 
 dependencies {
     implementation(project(":core:federated-catalog"))
+    implementation(project(":extensions:api:broker-api"))
     implementation(project(":extensions:api:federated-catalog-api"))
+
+    runtimeOnly(edc.iam.mock)
     runtimeOnly(edc.bundles.connector)
 
     testImplementation(edc.junit)

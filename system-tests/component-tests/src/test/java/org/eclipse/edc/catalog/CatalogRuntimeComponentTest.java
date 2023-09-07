@@ -9,7 +9,7 @@ import org.eclipse.edc.connector.contract.spi.types.offer.ContractOffer;
 import org.eclipse.edc.junit.annotations.ComponentTest;
 import org.eclipse.edc.junit.extensions.EdcExtension;
 import org.eclipse.edc.spi.message.MessageContext;
-import org.eclipse.edc.spi.message.RemoteMessageDispatcher;
+import org.eclipse.edc.spi.message.RemoteMessageDispatcherRegistry;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -32,6 +32,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 import static org.eclipse.edc.catalog.TestFunctions.catalogBuilder;
 import static org.eclipse.edc.catalog.TestFunctions.catalogOf;
+import static org.eclipse.edc.catalog.TestFunctions.createAndRegisterDispatcher;
 import static org.eclipse.edc.catalog.TestFunctions.createOffer;
 import static org.eclipse.edc.catalog.TestFunctions.emptyCatalog;
 import static org.eclipse.edc.catalog.TestFunctions.insertSingle;
@@ -61,19 +62,20 @@ public class CatalogRuntimeComponentTest {
                 // give the runtime time to set up everything
                 "edc.catalog.cache.execution.delay.seconds", "1",
                 "web.http.port", valueOf(TestFunctions.PORT),
-                "web.http.path", TestFunctions.BASE_PATH
+                "web.http.path", TestFunctions.BASE_PATH,
+                "edc.api.auth.key", "password"
         ));
     }
 
     @Test
     @DisplayName("Crawl a single target, yields no results")
-    void crawlSingle_noResults(RemoteMessageDispatcher dispatcher, FederatedCacheNodeDirectory directory) {
-        // prepare node directory
-        insertSingle(directory);
+    void crawlSingle_noResults(RemoteMessageDispatcherRegistry registry, FederatedCacheNodeDirectory directory) {
+        var dispatcher = createAndRegisterDispatcher(registry);
 
-        // intercept request egress
         when(dispatcher.send(eq(Catalog.class), isA(CatalogRequest.class), any(MessageContext.class)))
                 .thenReturn(emptyCatalog());
+
+        insertSingle(directory);
 
         await().pollDelay(ofSeconds(1))
                 .atMost(TEST_TIMEOUT)
@@ -85,14 +87,14 @@ public class CatalogRuntimeComponentTest {
 
     @Test
     @DisplayName("Crawl a single target, yields some results")
-    void crawlSingle_withResults(RemoteMessageDispatcher dispatcher, FederatedCacheNodeDirectory directory) {
-        // prepare node directory
-        insertSingle(directory);
+    void crawlSingle_withResults(RemoteMessageDispatcherRegistry registry, FederatedCacheNodeDirectory directory) {
+        var dispatcher = createAndRegisterDispatcher(registry);
 
-        // intercept request egress
         when(dispatcher.send(eq(Catalog.class), isA(CatalogRequest.class), any(MessageContext.class)))
                 .thenReturn(randomCatalog(5))
                 .thenReturn(emptyCatalog()); // this is important, otherwise there is an endless loop!
+
+        insertSingle(directory);
 
         await().pollDelay(ofSeconds(1))
                 .atMost(TEST_TIMEOUT)
@@ -101,16 +103,16 @@ public class CatalogRuntimeComponentTest {
 
     @Test
     @DisplayName("Crawl a single targets, > 100 results, needs paging")
-    void crawlSingle_withPagedResults(RemoteMessageDispatcher dispatcher, FederatedCacheNodeDirectory directory) {
-        // prepare node directory
-        insertSingle(directory);
+    void crawlSingle_withPagedResults(RemoteMessageDispatcherRegistry registry, FederatedCacheNodeDirectory directory) {
+        var dispatcher = createAndRegisterDispatcher(registry);
 
-        // intercept request egress
         when(dispatcher.send(eq(Catalog.class), isA(CatalogRequest.class), any(MessageContext.class)))
                 .thenReturn(randomCatalog(100))
                 .thenReturn(randomCatalog(100))
                 .thenReturn(randomCatalog(50))
                 .thenReturn(emptyCatalog()); // this is important, otherwise there is an endless loop!
+
+        insertSingle(directory);
 
         await().pollDelay(ofSeconds(1))
                 .atMost(TEST_TIMEOUT)
@@ -121,11 +123,9 @@ public class CatalogRuntimeComponentTest {
 
     @Test
     @DisplayName("Crawl a single target twice, emulate deletion of assets")
-    void crawlSingle_withDeletions_shouldRemove(RemoteMessageDispatcher dispatcher, FederatedCacheNodeDirectory directory) {
-        // prepare node directory
-        insertSingle(directory);
+    void crawlSingle_withDeletions_shouldRemove(RemoteMessageDispatcherRegistry registry, FederatedCacheNodeDirectory directory) {
+        var dispatcher = createAndRegisterDispatcher(registry);
 
-        // intercept request egress
         when(dispatcher.send(eq(Catalog.class), isA(CatalogRequest.class), any(MessageContext.class)))
                 .thenReturn(completedFuture(catalogBuilder().contractOffers(new ArrayList<>(List.of(
                         createOffer("offer1"), createOffer("offer2"), createOffer("offer3")
@@ -135,6 +135,8 @@ public class CatalogRuntimeComponentTest {
                         createOffer("offer1"), createOffer("offer2")/* this one is "deleted": createOffer("offer3") */
                 ))).build()))
                 .thenReturn(emptyCatalog()); // this is important, otherwise there is an endless loop!
+
+        insertSingle(directory);
 
         await().pollDelay(ofSeconds(1))
                 .atMost(TEST_TIMEOUT)
@@ -147,11 +149,9 @@ public class CatalogRuntimeComponentTest {
 
     @Test
     @DisplayName("Crawl a single target twice, emulate deleting and re-adding of assets with same ID")
-    void crawlSingle_withUpdates_shouldReplace(RemoteMessageDispatcher dispatcher, FederatedCacheNodeDirectory directory) {
-        // prepare node directory
-        insertSingle(directory);
+    void crawlSingle_withUpdates_shouldReplace(RemoteMessageDispatcherRegistry registry, FederatedCacheNodeDirectory directory) {
+        var dispatcher = createAndRegisterDispatcher(registry);
 
-        // intercept request egress
         when(dispatcher.send(eq(Catalog.class), isA(CatalogRequest.class), any(MessageContext.class)))
                 .thenReturn(completedFuture(catalogBuilder().contractOffers(new ArrayList<>(List.of(
                         createOffer("offer1"), createOffer("offer2"), createOffer("offer3")
@@ -161,6 +161,8 @@ public class CatalogRuntimeComponentTest {
                         createOffer("offer1"), createOffer("offer2"), createOffer("offer3")
                 ))).build()))
                 .thenReturn(emptyCatalog()); // this is important, otherwise there is an endless loop!
+
+        insertSingle(directory);
 
         await().pollDelay(ofSeconds(1))
                 .atMost(TEST_TIMEOUT)
@@ -172,11 +174,9 @@ public class CatalogRuntimeComponentTest {
 
     @Test
     @DisplayName("Crawl a single target twice, emulate addition of assets")
-    void crawlSingle_withAdditions_shouldAdd(RemoteMessageDispatcher dispatcher, FederatedCacheNodeDirectory directory) {
-        // prepare node directory
-        insertSingle(directory);
+    void crawlSingle_withAdditions_shouldAdd(RemoteMessageDispatcherRegistry registry, FederatedCacheNodeDirectory directory) {
+        var dispatcher = createAndRegisterDispatcher(registry);
 
-        // intercept request egress
         when(dispatcher.send(eq(Catalog.class), isA(CatalogRequest.class), any(MessageContext.class)))
                 .thenReturn(completedFuture(catalogBuilder().contractOffers(new ArrayList<>(List.of(
                         createOffer("offer1"), createOffer("offer2"), createOffer("offer3")
@@ -186,6 +186,8 @@ public class CatalogRuntimeComponentTest {
                         createOffer("offer1"), createOffer("offer2"), createOffer("offer3"), createOffer("offer4"), createOffer("offer5")
                 ))).build()))
                 .thenReturn(emptyCatalog()); // this is important, otherwise there is an endless loop!
+
+        insertSingle(directory);
 
         await().pollDelay(ofSeconds(1))
                 .atMost(TEST_TIMEOUT)
@@ -199,13 +201,14 @@ public class CatalogRuntimeComponentTest {
 
     @Test
     @DisplayName("Crawl a single target, verify that the originator information is properly inserted")
-    void crawlSingle_verifyCorrectOriginator(RemoteMessageDispatcher dispatcher, FederatedCacheNodeDirectory directory) {
-        // prepare node directory
-        insertSingle(directory);
-        // intercept request egress
+    void crawlSingle_verifyCorrectOriginator(RemoteMessageDispatcherRegistry registry, FederatedCacheNodeDirectory directory) {
+        var dispatcher = createAndRegisterDispatcher(registry);
+
         when(dispatcher.send(eq(Catalog.class), isA(CatalogRequest.class), any(MessageContext.class)))
                 .thenReturn(randomCatalog(5))
                 .thenReturn(emptyCatalog()); // this is important, otherwise there is an endless loop!
+
+        insertSingle(directory);
 
         await().pollDelay(ofSeconds(1))
                 .atMost(TEST_TIMEOUT)
@@ -218,11 +221,11 @@ public class CatalogRuntimeComponentTest {
 
     @Test
     @DisplayName("Crawl 1000 targets, verify that all offers are collected")
-    void crawlMany_shouldCollectAll(RemoteMessageDispatcher dispatcher, FederatedCacheNodeDirectory directory) {
+    void crawlMany_shouldCollectAll(RemoteMessageDispatcherRegistry registry, FederatedCacheNodeDirectory directory) {
+        var dispatcher = createAndRegisterDispatcher(registry);
 
         var numTotalAssets = new AtomicInteger();
         var rnd = new SecureRandom();
-
         // create 1000 crawl targets, setup dispatcher mocks for them
         range(0, 1000)
                 .forEach(i -> {
@@ -246,12 +249,8 @@ public class CatalogRuntimeComponentTest {
 
     @Test
     @DisplayName("Crawl multiple targets with conflicting asset IDs")
-    void crawlMultiple_whenConflictingAssetIds_shouldOverwrite(RemoteMessageDispatcher dispatcher, FederatedCacheNodeDirectory directory) {
-        var node1 = new FederatedCacheNode("test-node1", "http://test-node1.com", singletonList("ids-multipart"));
-        var node2 = new FederatedCacheNode("test-node2", "http://test-node2.com", singletonList("ids-multipart"));
-
-        directory.insert(node1);
-        directory.insert(node2);
+    void crawlMultiple_whenConflictingAssetIds_shouldOverwrite(RemoteMessageDispatcherRegistry registry, FederatedCacheNodeDirectory directory) {
+        var dispatcher = createAndRegisterDispatcher(registry);
 
         when(dispatcher.send(eq(Catalog.class), argThat(sentTo("http://test-node1.com/api/v1/ids/data")), any(MessageContext.class)))
                 .thenReturn(catalogOf(createOffer("offer1"), createOffer("offer2"), createOffer("offer3")))
@@ -260,6 +259,11 @@ public class CatalogRuntimeComponentTest {
         when(dispatcher.send(eq(Catalog.class), argThat(sentTo("http://test-node2.com/api/v1/ids/data")), any(MessageContext.class)))
                 .thenReturn(catalogOf(createOffer("offer14"), createOffer("offer32"), /*this one is conflicting:*/createOffer("offer3")))
                 .thenReturn(emptyCatalog());
+
+        var node1 = new FederatedCacheNode("test-node1", "http://test-node1.com", singletonList("ids-multipart"));
+        directory.insert(node1);
+        var node2 = new FederatedCacheNode("test-node2", "http://test-node2.com", singletonList("ids-multipart"));
+        directory.insert(node2);
 
         await().pollDelay(ofSeconds(1))
                 .atMost(TEST_TIMEOUT)
