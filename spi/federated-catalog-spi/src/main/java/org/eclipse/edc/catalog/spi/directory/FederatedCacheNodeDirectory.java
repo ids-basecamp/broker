@@ -19,8 +19,8 @@ import org.eclipse.edc.spi.persistence.EdcPersistenceException;
 
 public interface FederatedCacheNodeDirectory extends org.eclipse.edc.catalog.spi.FederatedCacheNodeDirectory {
 
-    String nodeAlreadyExistsMessage = "Federated Cache Node with Name %s already exists";
-    String nodeNoExistsMessage = "Federated Cache Node with Name %s doesn't exists";
+    String NODE_ALREADY_EXISTS_MESSAGE = "Federated Cache Node with Name %s already exists";
+    String NODE_NOT_EXISTS_MESSAGE = "Federated Cache Node with Name %s doesn't exists";
 
     void updateCrawlerExecution(FederatedCacheNode node);
 
@@ -29,11 +29,11 @@ public interface FederatedCacheNodeDirectory extends org.eclipse.edc.catalog.spi
     FederatedCacheNode findByName(String name);
 
     default void throwAlreadyExistsException(FederatedCacheNode federatedCacheNode) {
-        throw new EdcPersistenceException(String.format(nodeAlreadyExistsMessage, federatedCacheNode.getName()));
+        throw new EdcPersistenceException(String.format(NODE_ALREADY_EXISTS_MESSAGE, federatedCacheNode.getName()));
     }
 
     default void throwNoExistsException(FederatedCacheNode federatedCacheNode) {
-        throw new EdcPersistenceException(String.format(nodeNoExistsMessage, federatedCacheNode.getName()));
+        throw new EdcPersistenceException(String.format(NODE_NOT_EXISTS_MESSAGE, federatedCacheNode.getName()));
     }
 
 }
