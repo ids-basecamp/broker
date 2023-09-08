@@ -51,4 +51,8 @@ public class RejectionReason {
 
     public static final RejectionReason NOT_AUTHENTICATED =
             new RejectionReason(URI.create("https://w3id.org/idsa/code/NOT_AUTHENTICATED"));
+
+    public URI getId() {
+        return id;
+    }
 }

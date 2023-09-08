@@ -20,6 +20,7 @@ dependencies {
     implementation(project(":core:federated-catalog"))
     implementation(project(":extensions:api:broker-api"))
     implementation(project(":extensions:api:federated-catalog-api"))
+    testImplementation(project(mapOf("path" to ":extensions:api:broker-api")))
 
     runtimeOnly(edc.iam.mock)
     runtimeOnly(edc.bundles.connector)

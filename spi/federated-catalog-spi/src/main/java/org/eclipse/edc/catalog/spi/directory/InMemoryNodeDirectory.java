@@ -15,11 +15,15 @@
 package org.eclipse.edc.catalog.spi.directory;
 
 import org.eclipse.edc.catalog.spi.FederatedCacheNode;
+import org.eclipse.edc.spi.persistence.EdcPersistenceException;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class InMemoryNodeDirectory implements FederatedCacheNodeDirectory {
+
+    private final String federatedCacheNodeExistsMessage = "Federated Cache Node with Name %s already exists";
     private final List<FederatedCacheNode> cache = new CopyOnWriteArrayList<>();
 
     @Override
@@ -29,11 +33,19 @@ public class InMemoryNodeDirectory implements FederatedCacheNodeDirectory {
 
     @Override
     public void insert(FederatedCacheNode node) {
-        cache.add(node);
+            if (existsByName(node.getName())) {
+                throwAlreadyExistsException(node);
+            }
+            cache.add(node);
     }
 
     @Override
     public void updateCrawlerExecution(FederatedCacheNode node) {
+
+        if (existsByName(node.getName())) {
+            throwAlreadyExistsException(node);
+        }
+
         var existingNode = cache.stream()
                 .filter(f -> f.getName().equals(node.getName()))
                 .findFirst().get();
@@ -65,5 +77,11 @@ public class InMemoryNodeDirectory implements FederatedCacheNodeDirectory {
     @Override
     public FederatedCacheNode findByName(String name) {
         return cache.stream().filter(c -> c.getName().equals(name)).findFirst().orElse(null);
+    }
+
+    public Boolean existsByName(String name) {
+        FederatedCacheNode node = cache.stream().filter(c -> c.getName().equals(name)).findFirst().orElse(null);
+
+        return Objects.isNull(node) ? false : true;
     }
 }
