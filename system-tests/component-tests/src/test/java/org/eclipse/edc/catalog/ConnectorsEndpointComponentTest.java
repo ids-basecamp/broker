@@ -91,7 +91,7 @@ public class ConnectorsEndpointComponentTest {
     void queryConnector_withManyResults(RemoteMessageDispatcherRegistry registry, FederatedCacheNodeDirectory directory) {
         createAndRegisterDispatcher(registry);
 
-        insertMultiple(directory);
+        insertMultiple(directory, 3);
 
         List<FederatedCacheNode> nodes = queryConnectorsApi();
         assertThat(nodes).hasSize(3);

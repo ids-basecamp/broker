@@ -18,17 +18,16 @@ import static java.time.Duration.ofSeconds;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 import static org.eclipse.edc.catalog.TestFunctions.createAndRegisterDispatcher;
-import static org.eclipse.edc.catalog.TestFunctions.getHeader;
-import static org.eclipse.edc.catalog.TestFunctions.getHeaderUnknownMessage;
-import static org.eclipse.edc.catalog.TestFunctions.getUnregisterHeader;
 import static org.eclipse.edc.catalog.TestFunctions.queryConnectorsApi;
-import static org.eclipse.edc.catalog.TestFunctions.queryInfrastructureController;
+import static org.eclipse.edc.catalog.TestFunctions.readJsonFile;
+import static org.eclipse.edc.catalog.TestFunctions.sendInfrastructureController;
 
 @ComponentTest
 @ExtendWith(EdcExtension.class)
 public class InfrastructureEndpointComponentTest {
 
     private static final Duration TEST_TIMEOUT = ofSeconds(10);
+    private static final String REQUEST_FILES_BASE_PATH = "./catalog/infrastructure";
 
     @BeforeEach
     void setup(EdcExtension extension) {
@@ -49,7 +48,7 @@ public class InfrastructureEndpointComponentTest {
     void queryRegisterConnector_success(RemoteMessageDispatcherRegistry registry) {
         createAndRegisterDispatcher(registry);
 
-        assertThat(queryInfrastructureController(getHeader(true)).getStatusCode()).as(String.valueOf(200));
+        assertThat(sendInfrastructureController(getRegisterRequest(true)).getStatusCode()).as(String.valueOf(200));
         await().pollDelay(ofSeconds(1))
                 .atMost(TEST_TIMEOUT)
                 .untilAsserted(() -> {
@@ -62,11 +61,11 @@ public class InfrastructureEndpointComponentTest {
     void queryRegisterConnector_withErrorDuplicated(RemoteMessageDispatcherRegistry registry) {
         createAndRegisterDispatcher(registry);
 
-        assertThat(queryInfrastructureController(getHeader(true)).getStatusCode()).as(String.valueOf(200));
+        assertThat(sendInfrastructureController(getRegisterRequest(true)).getStatusCode()).as(String.valueOf(200));
         await().pollDelay(ofSeconds(1))
                 .atMost(TEST_TIMEOUT)
                 .untilAsserted(() -> {
-                    Response response = queryInfrastructureController(getHeader(true));
+                    Response response = sendInfrastructureController(getRegisterRequest(true));
                     assertThat(response.getStatusCode()).as(String.valueOf(200));
                     assertThat(response.getBody().asString().contains(String.valueOf(RejectionReason.INTERNAL_RECIPIENT_ERROR.getId())));
                     assertThat(queryConnectorsApi()).hasSize(1);
@@ -78,7 +77,7 @@ public class InfrastructureEndpointComponentTest {
     void queryRegisterConnector_withErrorInvalidData(RemoteMessageDispatcherRegistry registry) {
         createAndRegisterDispatcher(registry);
 
-        Response response = queryInfrastructureController(getHeader(false));
+        Response response = sendInfrastructureController(getRegisterRequest(false));
         assertThat(response.getStatusCode()).as(String.valueOf(200));
         assertThat(response.getBody().asString().contains(String.valueOf(RejectionReason.INTERNAL_RECIPIENT_ERROR.getId())));
         assertThat(queryConnectorsApi()).hasSize(0);
@@ -89,19 +88,18 @@ public class InfrastructureEndpointComponentTest {
     void queryUnregisterConnector_success(RemoteMessageDispatcherRegistry registry) {
         createAndRegisterDispatcher(registry);
 
-        assertThat(queryInfrastructureController(getHeader(true)).getStatusCode()).as(String.valueOf(200));
+        assertThat(sendInfrastructureController(getRegisterRequest(true)).getStatusCode()).as(String.valueOf(200));
         await().pollDelay(ofSeconds(1))
                 .atMost(TEST_TIMEOUT)
                 .untilAsserted(() -> {
                     assertThat(queryConnectorsApi()).hasSize(1);
-                    assertThat(queryInfrastructureController(getUnregisterHeader(true)).getStatusCode()).as(String.valueOf(200));
+                    assertThat(sendInfrastructureController(getUnregisterRequest(true)).getStatusCode()).as(String.valueOf(200));
                     await().pollDelay(ofSeconds(1))
                             .atMost(TEST_TIMEOUT)
                             .untilAsserted(() -> {
                                 assertThat(queryConnectorsApi()).hasSize(0);
                             });
                 });
-
     }
 
     @Test
@@ -109,17 +107,16 @@ public class InfrastructureEndpointComponentTest {
     void queryUnregisterConnector_withErrorInvalidData(RemoteMessageDispatcherRegistry registry) {
         createAndRegisterDispatcher(registry);
 
-        assertThat(queryInfrastructureController(getHeader(true)).getStatusCode()).as(String.valueOf(200));
+        assertThat(sendInfrastructureController(getRegisterRequest(true)).getStatusCode()).as(String.valueOf(200));
         await().pollDelay(ofSeconds(1))
                 .atMost(TEST_TIMEOUT)
                 .untilAsserted(() -> {
                     assertThat(queryConnectorsApi()).hasSize(1);
-                    Response response = queryInfrastructureController(getUnregisterHeader(false));
+                    Response response = sendInfrastructureController(getUnregisterRequest(false));
                     assertThat(response.getStatusCode()).as(String.valueOf(200));
                     assertThat(response.getBody().asString().contains(String.valueOf(RejectionReason.INTERNAL_RECIPIENT_ERROR.getId())));
                     assertThat(queryConnectorsApi()).hasSize(1);
                 });
-
     }
 
     @Test
@@ -130,7 +127,7 @@ public class InfrastructureEndpointComponentTest {
         await().pollDelay(ofSeconds(1))
                 .atMost(TEST_TIMEOUT)
                 .untilAsserted(() -> {
-                    Response response = queryInfrastructureController(getUnregisterHeader(true));
+                    Response response = sendInfrastructureController(getUnregisterRequest(true));
                     assertThat(response.getStatusCode()).as(String.valueOf(200));
                     assertThat(response.getBody().asString().contains(String.valueOf(RejectionReason.INTERNAL_RECIPIENT_ERROR.getId())));
                     assertThat(queryConnectorsApi()).hasSize(0);
@@ -145,11 +142,30 @@ public class InfrastructureEndpointComponentTest {
         await().pollDelay(ofSeconds(1))
                 .atMost(TEST_TIMEOUT)
                 .untilAsserted(() -> {
-                    assertThat(queryInfrastructureController(getHeaderUnknownMessage()).getStatusCode()).as(String.valueOf(200));
-                    Response response = queryInfrastructureController(getHeaderUnknownMessage());
+                    assertThat(sendInfrastructureController(getUnknownMessageRequest()).getStatusCode()).as(String.valueOf(200));
+                    Response response = sendInfrastructureController(getUnknownMessageRequest());
                     assertThat(response.getStatusCode()).as(String.valueOf(200));
                     assertThat(response.getBody().asString().contains(String.valueOf(RejectionReason.MESSAGE_TYPE_NOT_SUPPORTED.getId())));
                 });
+    }
 
+    public static String getRegisterRequest(Boolean isValid) {
+        if (isValid) {
+            return readJsonFile(REQUEST_FILES_BASE_PATH + "/register-valid-request.json");
+        } else {
+            return readJsonFile(REQUEST_FILES_BASE_PATH + "/register-invalid-request.json");
+        }
+    }
+
+    public static String getUnregisterRequest(Boolean isValid) {
+        if (isValid) {
+            return readJsonFile(REQUEST_FILES_BASE_PATH + "/unregister-valid-request.json");
+        } else {
+            return readJsonFile(REQUEST_FILES_BASE_PATH + "/unregister-invalid-request.json");
+        }
+    }
+
+    public static String getUnknownMessageRequest() {
+        return readJsonFile(REQUEST_FILES_BASE_PATH + "/unknown-message.json");
     }
 }
