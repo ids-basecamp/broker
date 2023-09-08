@@ -41,11 +41,6 @@ public class SqlFederatedNodeDirectory extends AbstractSqlStore implements Feder
 
     private final FederatedCacheNodeStatements statements;
 
-    private final String federatedCacheNodeExistsMessage = "Federated Cache Node with Name %s already exists";
-
-    private final String federatedCacheNodeNoExistsMessage = "Federated Cache Node with Name %s doesn't exists";
-
-
     public SqlFederatedNodeDirectory(DataSourceRegistry dataSourceRegistry,
                                      String dataSourceName,
                                      TransactionContext transactionContext,
@@ -80,7 +75,7 @@ public class SqlFederatedNodeDirectory extends AbstractSqlStore implements Feder
         transactionContext.execute(() -> {
             try (var connection = getConnection()) {
                 if (existsByName(connection, federatedCacheNode.getName())) {
-                    throw new EdcPersistenceException(String.format(federatedCacheNodeExistsMessage, federatedCacheNode.getName()));
+                    throwAlreadyExistsException(federatedCacheNode);
                 }
 
                 executeQuery(connection, statements.getInsertTemplate(),
@@ -106,7 +101,7 @@ public class SqlFederatedNodeDirectory extends AbstractSqlStore implements Feder
         transactionContext.execute(() -> {
             try (var connection = getConnection()) {
                 if (!existsByName(connection, federatedCacheNode.getName())) {
-                    throw new EdcPersistenceException(String.format(federatedCacheNodeNoExistsMessage, federatedCacheNode.getName()));
+                    throwNoExistsException(federatedCacheNode);
                 }
 
                 executeQuery(connection, statements.getUpdateCrawlerExecutionTemplate(),
@@ -127,7 +122,7 @@ public class SqlFederatedNodeDirectory extends AbstractSqlStore implements Feder
         Objects.requireNonNull(federatedCacheNode);
         Objects.requireNonNull(federatedCacheNode.getName());
 
-        var deleted = transactionContext.execute(() -> {
+        return transactionContext.execute(() -> {
             try (var connection = getConnection()) {
                 if (!existsByName(connection, federatedCacheNode.getName())) {
                     return false;
@@ -140,7 +135,6 @@ public class SqlFederatedNodeDirectory extends AbstractSqlStore implements Feder
                 throw new EdcPersistenceException(e.getMessage(), e);
             }
         });
-        return deleted;
     }
 
     @Override
@@ -160,7 +154,6 @@ public class SqlFederatedNodeDirectory extends AbstractSqlStore implements Feder
     }
 
     private FederatedCacheNode mapResultSet(ResultSet resultSet) throws Exception {
-
         List<String> supportedProtocols;
         try {
             supportedProtocols = fromJson(resultSet.getString(statements.getSupportedProtocolsColumn()), List.class);
