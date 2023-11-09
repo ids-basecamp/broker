@@ -1,4 +1,4 @@
-rootProject.name = "federated-catalog"
+rootProject.name = "ids-basecamp-broker"
 
 include(":core:federated-catalog")
 include(":extensions:store:fcc-node-directory-cosmos")
