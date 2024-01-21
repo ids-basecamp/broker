@@ -87,8 +87,6 @@ dependencyResolutionManagement {
             library("sql-core", edcGroup.get(), "sql-core").versionRef("edc")
             library("sql-pool", edcGroup.get(), "sql-pool-apache-commons").versionRef("edc")
             library("transaction-local", edcGroup.get(), "transaction-local").versionRef("edc")
-            library("ext-azure-cosmos-core", edcGroup.get(), "azure-cosmos-core").versionRef("edc")
-            library("ext-azure-test", edcGroup.get(), "azure-test").versionRef("edc")
             library("vault-filesystem", edcGroup.get(), "vault-filesystem").versionRef("edc")
 
             // DPF modules
@@ -111,7 +109,6 @@ dependencyResolutionManagement {
 }
 
 include(":core:federated-catalog")
-include(":extensions:store:fcc-node-directory-cosmos")
 include(":extensions:store:fcc-node-directory-sql")
 include(":extensions:store:fcc-store-sql")
 include(":extensions:store:postgres-flyway")
