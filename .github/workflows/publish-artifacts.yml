@@ -1,0 +1,40 @@
+name: Build and Publish Maven artifacts
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+                
+      - name: Set up JDK 17
+        uses: actions/setup-java@v2
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Set version variable
+        run: |
+          TAG=${{ github.ref_name }}
+          echo "VERSION=${TAG#v}" >> $GITHUB_ENV
+
+      - name: Build project
+        run: |
+            ./gradlew clean build \
+            -PdefaultVersion=${VERSION} \
+            -Dorg.gradle.project.gitHubUserName=${{ github.actor }} \
+            -Dorg.gradle.project.gitHubUserPassword=${{ secrets.GITHUB_TOKEN }}
+
+      - name: Publish to maven registry
+        run: |
+            ./gradlew publishAllPublicationsToGitHubRepository \
+            -PdefaultVersion=${VERSION} \
+            -Dorg.gradle.project.publishUserName=${{ github.actor }} \
+            -Dorg.gradle.project.publishUserPassword=${{ secrets.GITHUB_TOKEN }}
