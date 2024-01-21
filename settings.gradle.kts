@@ -82,6 +82,7 @@ dependencyResolutionManagement {
             library("spi-ids", edcGroup.get(), "ids-spi").versionRef("edc")
             library("ids", edcGroup.get(), "ids").versionRef("edc")
             library("ids-jsonld-serdes", edcGroup.get(), "ids-jsonld-serdes").versionRef("edc")
+            library("jwt-spi", edcGroup.get(), "jwt-spi").versionRef("edc")
             library("iam-mock", edcGroup.get(), "iam-mock").versionRef("edc")
             library("oauth2-core", edcGroup.get(), "oauth2-core").versionRef("edc")
             library("sql-core", edcGroup.get(), "sql-core").versionRef("edc")
