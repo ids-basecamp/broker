@@ -23,8 +23,10 @@ dependencies {
     runtimeOnly(project(":extensions:api:broker-api"))
     runtimeOnly(project(":extensions:api:federated-catalog-api"))
 
-    runtimeOnly(edc.iam.mock)
     runtimeOnly(edc.bundles.connector)
+    runtimeOnly(edc.vault.filesystem)
+    runtimeOnly(edc.oauth2.core)
+    runtimeOnly(edc.config.filesystem)
 }
 
 application {
