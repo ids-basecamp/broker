@@ -31,12 +31,3 @@ dependencies {
     implementation(libs.jersey.multipart)
     implementation(edc.api.management.config)
 }
-
-publishing {
-    publications {
-        create<MavenPublication>("broker-api") {
-            artifactId = "broker-api"
-            from(components["java"])
-        }
-    }
-}
