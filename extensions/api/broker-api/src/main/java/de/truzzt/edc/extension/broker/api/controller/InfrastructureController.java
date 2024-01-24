@@ -34,7 +34,9 @@ import java.io.InputStream;
 import java.util.List;
 
 import static java.lang.String.format;
-import static org.eclipse.edc.protocol.ids.api.multipart.util.ResponseUtil.*;
+import static org.eclipse.edc.protocol.ids.api.multipart.util.ResponseUtil.malformedMessage;
+import static org.eclipse.edc.protocol.ids.api.multipart.util.ResponseUtil.messageTypeNotSupported;
+import static org.eclipse.edc.protocol.ids.api.multipart.util.ResponseUtil.notAuthenticated;
 
 @Path(InfrastructureController.PATH)
 public class InfrastructureController extends AbstractMultipartController {

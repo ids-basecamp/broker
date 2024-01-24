@@ -29,7 +29,9 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-import static org.eclipse.edc.protocol.ids.api.multipart.util.ResponseUtil.*;
+import static org.eclipse.edc.protocol.ids.api.multipart.util.ResponseUtil.createMultipartResponse;
+import static org.eclipse.edc.protocol.ids.api.multipart.util.ResponseUtil.internalRecipientError;
+import static org.eclipse.edc.protocol.ids.api.multipart.util.ResponseUtil.messageProcessedNotification;
 
 public class ConnectorUpdateHandler implements Handler {
     private final Monitor monitor;
