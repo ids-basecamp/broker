@@ -51,14 +51,6 @@ allprojects {
             // override default dependency versions here
             projectVersion.set(actualVersion)
             metaModel.set(metaModelVersion)
-
-        }
-        pom {
-            projectName.set(project.name)
-            description.set("edc :: ${project.name}")
-            projectUrl.set("https://github.com/ids-basecamp/broker.git")
-            scmConnection.set("scm:git:git@github.com:ids-basecamp/broker.git")
-            scmUrl.set("https://github.com/ids-basecamp/broker.git")
         }
         swagger {
             title.set((project.findProperty("apiTitle") ?: "EDC REST API") as String)

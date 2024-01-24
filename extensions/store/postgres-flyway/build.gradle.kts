@@ -20,7 +20,6 @@ val postgresVersion: String by project
 
 plugins {
     `java-library`
-    `maven-publish`
 }
 
 dependencies {
@@ -33,12 +32,4 @@ dependencies {
     implementation("org.flywaydb:flyway-core:${flywayVersion}")
 
     testImplementation(edc.junit)
-}
-
-publishing {
-    publications {
-        create<MavenPublication>(project.name) {
-            from(components["java"])
-        }
-    }
 }

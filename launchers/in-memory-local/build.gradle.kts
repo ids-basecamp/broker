@@ -15,7 +15,6 @@
 plugins {
     `java-library`
     id("application")
-    id("com.github.johnrengelman.shadow") version "7.1.2"
 }
 
 dependencies {
@@ -23,15 +22,12 @@ dependencies {
     runtimeOnly(project(":extensions:api:broker-api"))
     runtimeOnly(project(":extensions:api:federated-catalog-api"))
 
-    runtimeOnly(edc.iam.mock)
     runtimeOnly(edc.bundles.connector)
+    runtimeOnly(edc.vault.filesystem)
+    runtimeOnly(edc.oauth2.core)
+    runtimeOnly(edc.config.filesystem)
 }
 
 application {
     mainClass.set("org.eclipse.edc.boot.system.runtime.BaseRuntime")
-}
-
-tasks.withType<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar> {
-    mergeServiceFiles()
-    archiveFileName.set("fc.jar")
 }

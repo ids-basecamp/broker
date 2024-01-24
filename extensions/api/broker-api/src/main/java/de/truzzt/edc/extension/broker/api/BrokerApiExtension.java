@@ -18,11 +18,12 @@ package de.truzzt.edc.extension.broker.api;
 import de.truzzt.edc.extension.broker.api.controller.InfrastructureController;
 import de.truzzt.edc.extension.broker.api.handler.ConnectorUnavailableHandler;
 import de.truzzt.edc.extension.broker.api.handler.ConnectorUpdateHandler;
-import de.truzzt.edc.extension.broker.api.handler.Handler;
-import de.truzzt.edc.extension.broker.api.types.TypeManagerUtil;
 import org.eclipse.edc.catalog.spi.directory.FederatedCacheNodeDirectory;
 import org.eclipse.edc.connector.api.management.configuration.ManagementApiConfiguration;
-import org.eclipse.edc.protocol.ids.jsonld.JsonLd;
+import org.eclipse.edc.protocol.ids.api.configuration.IdsApiConfiguration;
+import org.eclipse.edc.protocol.ids.api.multipart.handler.Handler;
+import org.eclipse.edc.protocol.ids.serialization.IdsTypeManagerUtil;
+import org.eclipse.edc.protocol.ids.spi.service.DynamicAttributeTokenService;
 import org.eclipse.edc.runtime.metamodel.annotation.Extension;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.runtime.metamodel.annotation.Requires;
@@ -38,7 +39,9 @@ import static org.eclipse.edc.protocol.ids.util.ConnectorIdUtil.resolveConnector
 @Requires(value = {
         WebService.class,
         ManagementApiConfiguration.class,
-        FederatedCacheNodeDirectory.class
+        FederatedCacheNodeDirectory.class,
+        DynamicAttributeTokenService.class,
+        IdsApiConfiguration.class
 })
 public class BrokerApiExtension implements ServiceExtension {
 
@@ -53,6 +56,12 @@ public class BrokerApiExtension implements ServiceExtension {
     @Inject
     private FederatedCacheNodeDirectory nodeDirectory;
 
+    @Inject
+    private DynamicAttributeTokenService tokenService;
+
+    @Inject
+    private IdsApiConfiguration idsApiConfiguration;
+
     @Override
     public String name() {
         return NAME;
@@ -61,16 +70,20 @@ public class BrokerApiExtension implements ServiceExtension {
     @Override
     public void initialize(ServiceExtensionContext context) {
         var connectorId = resolveConnectorId(context);
-
-        var typeManagerUtil = new TypeManagerUtil(JsonLd.getObjectMapper());
-
         var monitor = context.getMonitor();
 
-        var handlers = new LinkedList<Handler>();
-        handlers.add(new ConnectorUpdateHandler(monitor, connectorId, typeManagerUtil, nodeDirectory));
-        handlers.add(new ConnectorUnavailableHandler(monitor, connectorId, typeManagerUtil, nodeDirectory));
+        IdsTypeManagerUtil.customizeTypeManager(context.getTypeManager());
+        var objectMapper = IdsTypeManagerUtil.getIdsObjectMapper(context.getTypeManager());
 
-        var infrastructureController = new InfrastructureController(monitor, connectorId, typeManagerUtil,
+        var handlers = new LinkedList<Handler>();
+        handlers.add(new ConnectorUpdateHandler(monitor, connectorId, nodeDirectory));
+        handlers.add(new ConnectorUnavailableHandler(monitor, connectorId, nodeDirectory));
+
+        var infrastructureController = new InfrastructureController(monitor,
+                connectorId,
+                objectMapper,
+                tokenService,
+                idsApiConfiguration.getIdsWebhookAddress(),
                 handlers);
         webService.registerResource(managementApiConfig.getContextAlias(), infrastructureController);
     }

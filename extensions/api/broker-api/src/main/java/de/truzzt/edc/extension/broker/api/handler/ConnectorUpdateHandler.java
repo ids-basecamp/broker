@@ -15,64 +15,51 @@
 
 package de.truzzt.edc.extension.broker.api.handler;
 
-import de.truzzt.edc.extension.broker.api.message.MultipartRequest;
-import de.truzzt.edc.extension.broker.api.message.MultipartResponse;
-import de.truzzt.edc.extension.broker.api.types.TypeManagerUtil;
-import de.truzzt.edc.extension.broker.api.types.jwt.JwtPayload;
+import de.fraunhofer.iais.eis.ConnectorUpdateMessage;
 import org.eclipse.edc.catalog.spi.FederatedCacheNode;
 import org.eclipse.edc.catalog.spi.directory.FederatedCacheNodeDirectory;
+import org.eclipse.edc.jwt.spi.JwtRegisteredClaimNames;
+import org.eclipse.edc.protocol.ids.api.multipart.handler.Handler;
+import org.eclipse.edc.protocol.ids.api.multipart.message.MultipartRequest;
+import org.eclipse.edc.protocol.ids.api.multipart.message.MultipartResponse;
 import org.eclipse.edc.protocol.ids.spi.types.IdsId;
 import org.eclipse.edc.protocol.ids.spi.types.MessageProtocol;
-import org.eclipse.edc.spi.EdcException;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-import static de.truzzt.edc.extension.broker.api.util.ResponseUtil.badParameters;
-import static de.truzzt.edc.extension.broker.api.util.ResponseUtil.createMultipartResponse;
-import static de.truzzt.edc.extension.broker.api.util.ResponseUtil.internalRecipientError;
-import static de.truzzt.edc.extension.broker.api.util.ResponseUtil.messageProcessedNotification;
+import static org.eclipse.edc.protocol.ids.api.multipart.util.ResponseUtil.createMultipartResponse;
+import static org.eclipse.edc.protocol.ids.api.multipart.util.ResponseUtil.internalRecipientError;
+import static org.eclipse.edc.protocol.ids.api.multipart.util.ResponseUtil.messageProcessedNotification;
 
 public class ConnectorUpdateHandler implements Handler {
     private final Monitor monitor;
     private final IdsId connectorId;
-    private final TypeManagerUtil typeManagerUtil;
-
     private final FederatedCacheNodeDirectory nodeDirectory;
 
     public ConnectorUpdateHandler(
             @NotNull Monitor monitor,
             @NotNull IdsId connectorId,
-            @NotNull TypeManagerUtil typeManagerUtil,
             @NotNull FederatedCacheNodeDirectory nodeDirectory) {
         this.monitor = monitor;
         this.connectorId = connectorId;
-        this.typeManagerUtil = typeManagerUtil;
         this.nodeDirectory = nodeDirectory;
     }
 
     @Override
     public boolean canHandle(@NotNull MultipartRequest multipartRequest) {
-        return multipartRequest.getHeader().getType().equals("ids:ConnectorUpdateMessage");
+        return multipartRequest.getHeader() instanceof ConnectorUpdateMessage;
     }
 
     @Override
     public @NotNull MultipartResponse handleRequest(@NotNull MultipartRequest multipartRequest) {
 
-        var header = multipartRequest.getHeader();
-
-        JwtPayload jwt;
-        try {
-            jwt = typeManagerUtil.parseToken(header.getSecurityToken());
-        } catch (EdcException e) {
-            monitor.severe("ConnectorUpdateHandler: Security Token is invalid", e);
-            return createMultipartResponse(badParameters(header, connectorId));
-        }
+        var header = (ConnectorUpdateMessage) multipartRequest.getHeader();
+        var sub = multipartRequest.getClaimToken().getStringClaim(JwtRegisteredClaimNames.SUBJECT);
 
         try {
-            var cacheNode = new FederatedCacheNode(
-                    jwt.getSub(),
+            var cacheNode = new FederatedCacheNode(sub,
                     header.getIssuerConnector().toString(),
                     List.of(MessageProtocol.IDS_MULTIPART)
             );

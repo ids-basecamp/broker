@@ -15,20 +15,17 @@
 
 package de.truzzt.edc.extension.broker.api.controller;
 
-import de.truzzt.edc.extension.broker.api.handler.Handler;
-import de.truzzt.edc.extension.broker.api.message.MultipartRequest;
-import de.truzzt.edc.extension.broker.api.message.MultipartResponse;
-import de.truzzt.edc.extension.broker.api.types.TypeManagerUtil;
-import de.truzzt.edc.extension.broker.api.types.ids.Message;
-import jakarta.ws.rs.Consumes;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import de.fraunhofer.iais.eis.Message;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
-import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.core.MediaType;
+import org.eclipse.edc.protocol.ids.api.multipart.controller.AbstractMultipartController;
+import org.eclipse.edc.protocol.ids.api.multipart.handler.Handler;
+import org.eclipse.edc.protocol.ids.api.multipart.message.MultipartRequest;
+import org.eclipse.edc.protocol.ids.api.multipart.message.MultipartResponse;
+import org.eclipse.edc.protocol.ids.spi.service.DynamicAttributeTokenService;
 import org.eclipse.edc.protocol.ids.spi.types.IdsId;
-import org.eclipse.edc.spi.iam.ClaimToken;
 import org.eclipse.edc.spi.monitor.Monitor;
-import org.glassfish.jersey.media.multipart.FormDataBodyPart;
 import org.glassfish.jersey.media.multipart.FormDataMultiPart;
 import org.glassfish.jersey.media.multipart.FormDataParam;
 import org.jetbrains.annotations.NotNull;
@@ -36,33 +33,23 @@ import org.jetbrains.annotations.NotNull;
 import java.io.InputStream;
 import java.util.List;
 
-import static de.truzzt.edc.extension.broker.api.util.ResponseUtil.malformedMessage;
-import static de.truzzt.edc.extension.broker.api.util.ResponseUtil.messageTypeNotSupported;
-import static de.truzzt.edc.extension.broker.api.util.ResponseUtil.notAuthenticated;
 import static java.lang.String.format;
+import static org.eclipse.edc.protocol.ids.api.multipart.util.ResponseUtil.malformedMessage;
+import static org.eclipse.edc.protocol.ids.api.multipart.util.ResponseUtil.messageTypeNotSupported;
+import static org.eclipse.edc.protocol.ids.api.multipart.util.ResponseUtil.notAuthenticated;
 
-@Consumes({MediaType.MULTIPART_FORM_DATA})
-@Produces({MediaType.MULTIPART_FORM_DATA})
 @Path(InfrastructureController.PATH)
-public class InfrastructureController {
+public class InfrastructureController extends AbstractMultipartController {
 
     public static final String PATH = "/infrastructure";
-    private static final String HEADER = "header";
-    private static final String PAYLOAD = "payload";
-
-    private final Monitor monitor;
-    private final IdsId connectorId;
-    private final List<Handler> multipartHandlers;
-    private final TypeManagerUtil typeManagerUtil;
 
     public InfrastructureController(@NotNull Monitor monitor,
-                                   @NotNull IdsId connectorId,
-                                   @NotNull TypeManagerUtil typeManagerUtil,
+                                    @NotNull IdsId connectorId,
+                                    @NotNull ObjectMapper objectMapper,
+                                    @NotNull DynamicAttributeTokenService tokenService,
+                                    @NotNull String idsWebhookAddress,
                                     @NotNull List<Handler> multipartHandlers) {
-        this.monitor = monitor;
-        this.connectorId = connectorId;
-        this.typeManagerUtil = typeManagerUtil;
-        this.multipartHandlers = multipartHandlers;
+        super(monitor, connectorId, objectMapper, tokenService, multipartHandlers, idsWebhookAddress);
     }
 
     @POST
@@ -74,7 +61,7 @@ public class InfrastructureController {
 
         Message header;
         try {
-            header = typeManagerUtil.parseMessage(headerInputStream);
+            header = objectMapper.readValue(headerInputStream, Message.class);
         } catch (Exception e) {
             monitor.warning(format("InfrastructureController: Header parsing failed: %s", e.getMessage()));
             return createFormDataMultiPart(malformedMessage(null, connectorId));
@@ -96,13 +83,20 @@ public class InfrastructureController {
             return createFormDataMultiPart(notAuthenticated(header, connectorId));
         }
 
+        // Validate DAT
+        var verificationResult = tokenService
+                .verifyDynamicAttributeToken(dynamicAttributeToken, header.getIssuerConnector(), idsWebhookAddress);
+        if (verificationResult.failed()) {
+            monitor.warning(format("InfrastructureController: Token validation failed %s", verificationResult.getFailure().getMessages()));
+            return createFormDataMultiPart(notAuthenticated(header, connectorId));
+        }
 
         // Build the multipart request
-        var emptyClaimToken = ClaimToken.Builder.newInstance().build();
+        var claimToken = verificationResult.getContent();
         var multipartRequest = MultipartRequest.Builder.newInstance()
                 .header(header)
                 .payload(payload)
-                .claimToken(emptyClaimToken)
+                .claimToken(claimToken)
                 .build();
 
         var multipartResponse = multipartHandlers.stream()
@@ -114,23 +108,5 @@ public class InfrastructureController {
                         .build());
 
         return createFormDataMultiPart(multipartResponse.getHeader(), multipartResponse.getPayload());
-    }
-
-    private FormDataMultiPart createFormDataMultiPart(Message header, Object payload) {
-        var multiPart = createFormDataMultiPart(header);
-
-        if (payload != null) {
-            multiPart.bodyPart(new FormDataBodyPart(PAYLOAD, typeManagerUtil.toJson(payload), MediaType.APPLICATION_JSON_TYPE));
-        }
-
-        return multiPart;
-    }
-
-    private FormDataMultiPart createFormDataMultiPart(Message header) {
-        var multiPart = new FormDataMultiPart();
-        if (header != null) {
-            multiPart.bodyPart(new FormDataBodyPart(HEADER, typeManagerUtil.toJson(header), MediaType.APPLICATION_JSON_TYPE));
-        }
-        return multiPart;
     }
 }

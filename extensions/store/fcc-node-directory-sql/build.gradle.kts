@@ -37,18 +37,3 @@ dependencies {
     testImplementation(testFixtures(edc.sql.core))
     testFixturesImplementation(project(":extensions:store:postgres-flyway"))
 }
-
-edcBuild {
-    swagger {
-        apiGroup.set("management-api")
-    }
-}
-
-publishing {
-    publications {
-        create<MavenPublication>("federated-catalog-core") {
-            artifactId = "federated-catalog-core"
-            from(components["java"])
-        }
-    }
-}
