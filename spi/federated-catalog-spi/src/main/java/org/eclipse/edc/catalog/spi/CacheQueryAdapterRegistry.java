@@ -50,4 +50,6 @@ public interface CacheQueryAdapterRegistry {
      * @return a {@link QueryResponse} with {@link QueryResponse#getStatus()} that contains the result (Assets) and potentially errors.
      */
     QueryResponse executeQuery(FederatedCatalogCacheQuery query);
+
+    QueryConnectorResponse executeConnectorQuery(FederatedCatalogCacheQuery query);
 }

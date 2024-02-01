@@ -21,6 +21,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.eclipse.edc.catalog.spi.FederatedCacheNode;
 import org.eclipse.edc.catalog.spi.model.FederatedCatalogCacheQuery;
 import org.eclipse.edc.connector.contract.spi.types.offer.ContractOffer;
 
@@ -38,4 +39,14 @@ public interface FederatedCatalogApi {
 
     )
     Collection<ContractOffer> getCachedCatalog(FederatedCatalogCacheQuery federatedCatalogCacheQuery);
+
+    @Operation(description = "Obtains all connectors registered",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "A list of connectors is returned, potentially empty",
+                            content = @Content(array = @ArraySchema(schema = @Schema(implementation = FederatedCacheNode.class)))),
+                    @ApiResponse(responseCode = "50x", description = "A Query could not be completed due to an internal error")
+            }
+
+    )
+    Collection<FederatedCacheNode> getConnectors(FederatedCatalogCacheQuery federatedCatalogCacheQuery);
 }
