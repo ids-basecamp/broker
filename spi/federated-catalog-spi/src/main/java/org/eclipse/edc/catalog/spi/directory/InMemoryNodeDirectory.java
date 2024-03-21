@@ -5,6 +5,9 @@ import org.eclipse.edc.catalog.spi.FederatedCacheNode;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+/**
+ * In memory implementation of FederatedCacheNodesDirectory.
+ */
 public class InMemoryNodeDirectory implements FederatedCacheNodeDirectory {
     private final List<FederatedCacheNode> cache = new CopyOnWriteArrayList<>();
 

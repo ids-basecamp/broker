@@ -14,8 +14,6 @@
 
 package org.eclipse.edc.catalog.spi;
 
-import org.eclipse.edc.connector.contract.spi.types.offer.ContractOffer;
-
 import java.util.ArrayList;
 import java.util.List;
 
