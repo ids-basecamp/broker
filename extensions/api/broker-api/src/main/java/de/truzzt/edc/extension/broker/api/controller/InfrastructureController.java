@@ -43,6 +43,8 @@ public class InfrastructureController extends AbstractMultipartController {
 
     public static final String PATH = "/infrastructure";
 
+    private static final String LOG_ID = "InfrastructureController";
+
     public InfrastructureController(@NotNull Monitor monitor,
                                     @NotNull IdsId connectorId,
                                     @NotNull ObjectMapper objectMapper,
@@ -55,19 +57,18 @@ public class InfrastructureController extends AbstractMultipartController {
     @POST
     public FormDataMultiPart request(@FormDataParam(HEADER) InputStream headerInputStream,
                                      @FormDataParam(PAYLOAD) String payload) {
+
+        // Check if header is missing
         if (headerInputStream == null) {
             return createFormDataMultiPart(malformedMessage(null, connectorId));
         }
 
+        // Convert header to message
         Message header;
         try {
             header = objectMapper.readValue(headerInputStream, Message.class);
         } catch (Exception e) {
-            monitor.warning(format("InfrastructureController: Header parsing failed: %s", e.getMessage()));
-            return createFormDataMultiPart(malformedMessage(null, connectorId));
-        }
-
-        if (header == null) {
+            monitor.warning(format(LOG_ID + ": Header parsing failed: %s", e.getMessage()));
             return createFormDataMultiPart(malformedMessage(null, connectorId));
         }
 
@@ -76,18 +77,18 @@ public class InfrastructureController extends AbstractMultipartController {
             return createFormDataMultiPart(malformedMessage(header, connectorId));
         }
 
-        // Check if DAT present
-        var dynamicAttributeToken = header.getSecurityToken();
-        if (dynamicAttributeToken == null || dynamicAttributeToken.getTokenValue() == null) {
-            monitor.warning("InfrastructureController: Token is missing in header");
+        // Check if security token is present
+        var securityToken = header.getSecurityToken();
+        if (securityToken == null || securityToken.getTokenValue() == null) {
+            monitor.warning(LOG_ID + ": Token is missing in header");
             return createFormDataMultiPart(notAuthenticated(header, connectorId));
         }
 
         // Validate DAT
         var verificationResult = tokenService
-                .verifyDynamicAttributeToken(dynamicAttributeToken, header.getIssuerConnector(), idsWebhookAddress);
+                .verifyDynamicAttributeToken(securityToken, header.getIssuerConnector(), idsWebhookAddress);
         if (verificationResult.failed()) {
-            monitor.warning(format("InfrastructureController: Token validation failed %s", verificationResult.getFailure().getMessages()));
+            monitor.warning(format(LOG_ID + ": Token validation failed %s", verificationResult.getFailure().getMessages()));
             return createFormDataMultiPart(notAuthenticated(header, connectorId));
         }
 

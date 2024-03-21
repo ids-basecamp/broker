@@ -20,8 +20,10 @@ import org.eclipse.edc.spi.types.domain.asset.Asset;
 /**
  * Accepts a {@link FederatedCatalogCacheQuery} and fetches a collection of {@link Asset} that conform to that query.
  */
-@FunctionalInterface
+
 public interface QueryEngine {
 
     QueryResponse getCatalog(FederatedCatalogCacheQuery query);
+
+    QueryConnectorResponse getConnectors(FederatedCatalogCacheQuery query);
 }
