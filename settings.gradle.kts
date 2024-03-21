@@ -13,7 +13,7 @@
  *
  */
 
-rootProject.name = "ids-basecamp-broker"
+rootProject.name = "broker"
 
 pluginManagement {
     repositories {

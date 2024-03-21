@@ -26,22 +26,15 @@ import java.util.stream.Stream;
 
 public class CacheQueryAdapterImpl implements CacheQueryAdapter {
 
-    private FederatedCacheStore store;
+    private final FederatedCacheStore store;
 
-    private FederatedCacheNodeDirectory directory;
+    private final FederatedCacheNodeDirectory directory;
 
     public CacheQueryAdapterImpl(FederatedCacheStore store, FederatedCacheNodeDirectory directory) {
         this.store = store;
         this.directory = directory;
     }
 
-    public CacheQueryAdapterImpl(FederatedCacheStore store) {
-        this.store = store;
-    }
-
-    public CacheQueryAdapterImpl(FederatedCacheNodeDirectory directory) {
-        this.directory = directory;
-    }
     @Override
     public @NotNull Stream<ContractOffer> executeQuery(FederatedCatalogCacheQuery query) {
         //todo: translate the generic CacheQuery into a list of criteria and
