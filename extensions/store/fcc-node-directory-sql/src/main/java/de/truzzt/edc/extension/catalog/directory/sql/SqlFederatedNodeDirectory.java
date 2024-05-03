@@ -21,6 +21,7 @@ import org.eclipse.edc.catalog.spi.FederatedCacheNode;
 import org.eclipse.edc.catalog.spi.directory.FederatedCacheNodeDirectory;
 import org.eclipse.edc.spi.persistence.EdcPersistenceException;
 import org.eclipse.edc.spi.query.QuerySpec;
+import org.eclipse.edc.sql.QueryExecutor;
 import org.eclipse.edc.sql.store.AbstractSqlStore;
 import org.eclipse.edc.transaction.datasource.spi.DataSourceRegistry;
 import org.eclipse.edc.transaction.spi.TransactionContext;
@@ -31,8 +32,6 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
-
-import static org.eclipse.edc.sql.SqlQueryExecutor.executeQuery;
 
 public class SqlFederatedNodeDirectory extends AbstractSqlStore implements FederatedCacheNodeDirectory {
 
@@ -45,8 +44,9 @@ public class SqlFederatedNodeDirectory extends AbstractSqlStore implements Feder
                                      String dataSourceName,
                                      TransactionContext transactionContext,
                                      ObjectMapper objectMapper,
-                                     FederatedCacheNodeStatements statements) {
-        super(dataSourceRegistry, dataSourceName, transactionContext, objectMapper);
+                                     FederatedCacheNodeStatements statements,
+                                     QueryExecutor queryExecutor) {
+        super(dataSourceRegistry, dataSourceName, transactionContext, objectMapper, queryExecutor);
         this.statements = statements;
     }
 
@@ -57,7 +57,7 @@ public class SqlFederatedNodeDirectory extends AbstractSqlStore implements Feder
             try {
                 // TODO Implement a definite solution for the query limit. Temporary fix using 5000 as limit.
                 var statement = statements.createQuery(QuerySpec.Builder.newInstance().limit(5000).build());
-                return executeQuery(getConnection(), true, this::mapResultSet, statement.getQueryAsString(), statement.getParameters())
+                return queryExecutor.executeQuery(getConnection(), true, this::mapResultSet, statement.getQueryAsString(), statement.getParameters())
                         .collect(Collectors.toList());
             } catch (SQLException e) {
                 throw new EdcPersistenceException(e);
@@ -78,7 +78,7 @@ public class SqlFederatedNodeDirectory extends AbstractSqlStore implements Feder
                     throw new EdcPersistenceException(String.format(federatedCacheNodeExistsMessage, federatedCacheNode.getName()));
                 }
 
-                executeQuery(connection, statements.getInsertTemplate(),
+                queryExecutor.executeQuery(connection, statements.getInsertTemplate(),
                         federatedCacheNode.getName(),
                         federatedCacheNode.getTargetUrl(),
                         toJson(federatedCacheNode.getSupportedProtocols())
@@ -101,7 +101,7 @@ public class SqlFederatedNodeDirectory extends AbstractSqlStore implements Feder
                     return false;
                 }
 
-                executeQuery(connection, statements.getDeleteByNameTemplate(),
+                queryExecutor.executeQuery(connection, statements.getDeleteByNameTemplate(),
                         federatedCacheNode.getName());
                 return true;
             } catch (Exception e) {
@@ -128,7 +128,7 @@ public class SqlFederatedNodeDirectory extends AbstractSqlStore implements Feder
 
     private boolean existsByName(Connection connection, String name) {
         var sql = statements.getCountByNameTemplate();
-        try (var stream = executeQuery(connection, false, this::mapCount, sql, name)) {
+        try (var stream = queryExecutor.executeQuery(connection, false, this::mapCount, sql, name)) {
             return stream.findFirst().orElse(0L) > 0;
         }
     }

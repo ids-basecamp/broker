@@ -24,6 +24,7 @@ import org.eclipse.edc.policy.model.PolicyRegistrationTypes;
 import org.eclipse.edc.spi.persistence.EdcPersistenceException;
 import org.eclipse.edc.spi.query.Criterion;
 import org.eclipse.edc.spi.types.TypeManager;
+import org.eclipse.edc.sql.QueryExecutor;
 import org.eclipse.edc.sql.testfixtures.PostgresqlStoreSetupExtension;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -50,7 +51,7 @@ class PostgresFederatedCacheStoreTest {
     private DatabaseMigrationManager migrationManager;
 
     @BeforeEach
-    void setUp(PostgresqlStoreSetupExtension setupExtension) {
+    void setUp(PostgresqlStoreSetupExtension setupExtension, QueryExecutor queryExecutor) {
         var typeManager = new TypeManager();
         typeManager.registerTypes(PolicyRegistrationTypes.TYPES.toArray(Class<?>[]::new));
 
@@ -58,7 +59,7 @@ class PostgresFederatedCacheStoreTest {
         migrationManager.migrateAllDataSources(false);
 
         federatedCacheStore = new SqlFederatedCacheStore(setupExtension.getDataSourceRegistry(), setupExtension.getDatasourceName(),
-                setupExtension.getTransactionContext(), typeManager.getMapper(), sqlStatements);
+                setupExtension.getTransactionContext(), typeManager.getMapper(), sqlStatements, queryExecutor);
     }
 
     @AfterEach

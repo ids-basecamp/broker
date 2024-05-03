@@ -23,6 +23,7 @@ import org.eclipse.edc.runtime.metamodel.annotation.Provider;
 import org.eclipse.edc.runtime.metamodel.annotation.Requires;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
+import org.eclipse.edc.sql.QueryExecutor;
 import org.eclipse.edc.transaction.datasource.spi.DataSourceRegistry;
 import org.eclipse.edc.transaction.spi.TransactionContext;
 
@@ -39,6 +40,8 @@ public class SqlFederatedCacheStoreExtension implements ServiceExtension {
     private DataSourceRegistry dataSourceRegistry;
     @Inject
     private TransactionContext transactionContext;
+    @Inject
+    private QueryExecutor queryExecutor;
 
     @Override
     public String name() {
@@ -52,7 +55,8 @@ public class SqlFederatedCacheStoreExtension implements ServiceExtension {
                 DataSourceRegistry.DEFAULT_DATASOURCE,
                 transactionContext,
                 context.getTypeManager().getMapper(),
-                new PostgresDialectStatements()
+                new PostgresDialectStatements(),
+                queryExecutor
         );
     }
 }

@@ -24,6 +24,7 @@ import org.eclipse.edc.spi.persistence.EdcPersistenceException;
 import org.eclipse.edc.spi.query.Criterion;
 import org.eclipse.edc.spi.query.QuerySpec;
 import org.eclipse.edc.spi.types.domain.asset.Asset;
+import org.eclipse.edc.sql.QueryExecutor;
 import org.eclipse.edc.sql.store.AbstractSqlStore;
 import org.eclipse.edc.transaction.datasource.spi.DataSourceRegistry;
 import org.eclipse.edc.transaction.spi.TransactionContext;
@@ -40,8 +41,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import static org.eclipse.edc.sql.SqlQueryExecutor.executeQuery;
-
 public class SqlFederatedCacheStore extends AbstractSqlStore implements FederatedCacheStore {
 
     private final ContractOfferStatements statements;
@@ -52,8 +51,9 @@ public class SqlFederatedCacheStore extends AbstractSqlStore implements Federate
                                   String dataSourceName,
                                   TransactionContext transactionContext,
                                   ObjectMapper objectMapper,
-                                  ContractOfferStatements statements) {
-        super(dataSourceRegistry, dataSourceName, transactionContext, objectMapper);
+                                  ContractOfferStatements statements,
+                                  QueryExecutor queryExecutor) {
+        super(dataSourceRegistry, dataSourceName, transactionContext, objectMapper, queryExecutor);
         this.statements = statements;
     }
 
@@ -73,7 +73,7 @@ public class SqlFederatedCacheStore extends AbstractSqlStore implements Federate
                     throw new EdcPersistenceException(String.format(contractOfferExistsMessage, contractOffer.getId()));
                 }
 
-                executeQuery(connection, statements.getInsertTemplate(),
+                queryExecutor.executeQuery(connection, statements.getInsertTemplate(),
                         contractOffer.getId(),
                         toJson(contractOffer.getPolicy()),
                         toJson(contractOffer.getAsset()),
@@ -93,7 +93,7 @@ public class SqlFederatedCacheStore extends AbstractSqlStore implements Federate
 
     private boolean existsById(Connection connection, String definitionId) {
         var sql = statements.getCountTemplate();
-        try (var stream = executeQuery(connection, false, this::mapCount, sql, definitionId)) {
+        try (var stream = queryExecutor.executeQuery(connection, false, this::mapCount, sql, definitionId)) {
             return stream.findFirst().orElse(0L) > 0;
         }
     }
@@ -109,7 +109,7 @@ public class SqlFederatedCacheStore extends AbstractSqlStore implements Federate
         return transactionContext.execute(() -> {
             try {
                 var statement = statements.createQuery(QuerySpec.Builder.newInstance().filter(query).build());
-                return executeQuery(getConnection(), true, this::mapResultSet, statement.getQueryAsString(), statement.getParameters())
+                return queryExecutor.executeQuery(getConnection(), true, this::mapResultSet, statement.getQueryAsString(), statement.getParameters())
                         .collect(Collectors.toList());
             } catch (SQLException e) {
                 throw new EdcPersistenceException(e);
@@ -122,7 +122,7 @@ public class SqlFederatedCacheStore extends AbstractSqlStore implements Federate
         transactionContext.execute(() -> {
             try (var connection = getConnection()) {
                 Long dateInSeconds = mapFromZonedDateTime(ZonedDateTime.now());
-                executeQuery(connection, statements.getDeleteExpiredTemplate(), dateInSeconds);
+                queryExecutor.executeQuery(connection, statements.getDeleteExpiredTemplate(), dateInSeconds);
 
             } catch (Exception e) {
                 throw new EdcPersistenceException(e.getMessage(), e);
@@ -135,7 +135,7 @@ public class SqlFederatedCacheStore extends AbstractSqlStore implements Federate
         transactionContext.execute(() -> {
             try (var connection = getConnection()) {
                 Long dateInSeconds = mapFromZonedDateTime(ZonedDateTime.now());
-                executeQuery(connection, statements.getUpdateOfferEndTemplate(), dateInSeconds);
+                queryExecutor.executeQuery(connection, statements.getUpdateOfferEndTemplate(), dateInSeconds);
 
             } catch (Exception e) {
                 throw new EdcPersistenceException(e.getMessage(), e);
